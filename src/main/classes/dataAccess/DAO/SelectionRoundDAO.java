@@ -8,6 +8,7 @@ import university.factories.SelectionRoundFactory;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 public class SelectionRoundDAO implements DAO<SelectionRound> {
 
@@ -85,6 +86,33 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
             return null;
         }
     }
+
+
+    public List<SelectionRound> getByIdList (List<Long> ids) {
+
+        try {
+            String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
+                "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
+                "ON s.id = c.id_selection_round WHERE id IN (?);";
+
+            PreparedStatement st = conn.prepareStatement(sql);
+
+            st.setString(1, ids.stream()
+                                        .map(String::valueOf)
+                                        .collect(Collectors.joining(", ")));
+
+            st.execute();
+
+            ResultSet rs = st.getResultSet();
+
+            return getSelectionRoundsWithResultFactors(rs);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     @Override
     public SelectionRound save(SelectionRound selectionRound) throws Exception {

@@ -5,6 +5,7 @@ import rateFactors.RateFactorResult;
 import rateFactors.factories.RateFactorsFactory;
 import rateFactors.types.SchoolCertificateType;
 import user.Enrollee;
+import user.User;
 
 import java.sql.*;
 import java.util.*;
@@ -59,6 +60,41 @@ public class EnrolleeDAO implements DAO<Enrollee> {
     }
 
 
+    public Enrollee getByLoginAndPassword(User user) {
+
+        try {
+
+            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS e " +
+                    "INNER JOIN " + SUPER_TABLE_NAME + " AS u " +
+                    " ON u.id = e.id_user " +
+                    "LEFT JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = e.id_user " +
+                    "WHERE u.login = ? AND u.password = ?;";
+
+
+            PreparedStatement st = conn.prepareStatement(sql);
+
+            st.setString(1, user.getLogin());
+            st.setString(2, new String(user.getPassword()));
+
+            st.execute();
+
+            ResultSet rs = st.getResultSet();
+
+            List<Enrollee> enrollees = getEnrolleeListWithResultFactors(rs);
+
+            if (enrollees.size() < 1) {
+                return null;
+            }
+
+            return enrollees.get(0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     private RateFactorResult getAndRemoveFromListSchoolCertificateResult(List<RateFactorResult> results) {
         Iterator<RateFactorResult> i = results.iterator();
 
@@ -78,8 +114,6 @@ public class EnrolleeDAO implements DAO<Enrollee> {
 
     @Override
     public List<Enrollee> getAll() {
-
-
         try {
 
             String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS e " +

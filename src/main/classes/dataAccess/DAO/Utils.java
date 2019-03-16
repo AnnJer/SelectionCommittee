@@ -34,4 +34,13 @@ public class Utils {
     }
 
 
+    static void deleteCasadeById(long id, String table, Connection conn) throws SQLException {
+        String sql = "DELETE FROM " + table + " WHERE id = ? CASCADE;";
+        PreparedStatement st = conn.prepareStatement(sql);
+
+        st.setLong(1, id);
+
+        st.executeUpdate();
+    }
+
 }

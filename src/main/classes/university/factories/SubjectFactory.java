@@ -4,7 +4,6 @@ import university.Subject;
 
 public class SubjectFactory {
 
-
     private static SubjectFactory instance = null;
 
     public static SubjectFactory getInstance() {

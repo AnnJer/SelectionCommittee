@@ -85,7 +85,7 @@ public class EnrolleeDAO implements DAO<Enrollee> {
             String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS e " +
                     "INNER JOIN " + SUPER_TABLE_NAME + " AS u " +
                     " ON u.id = e.id_user " +
-                    "INNER JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = e.id_user;";
+                    "LEFT JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = e.id_user;";
 
 
             Statement st = conn.createStatement();
@@ -122,6 +122,10 @@ public class EnrolleeDAO implements DAO<Enrollee> {
             float result = rs.getFloat("result");
             String type = rs.getString("type");
             long resultId = rs.getLong("r_id");
+
+            if (type == null) {
+                continue;
+            }
 
             RateFactorResult rateFactorResult = RateFactorsFactory.getInstance().createResult(result, type);
             rateFactorResult.setId(resultId);

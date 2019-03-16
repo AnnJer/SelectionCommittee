@@ -5,14 +5,9 @@ import rateFactors.factories.RateFactorsFactory;
 import university.SelectionRound;
 import university.factories.SelectionRoundFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
 
 public class SelectionRoundDAO implements DAO<SelectionRound> {
 
@@ -20,14 +15,16 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
 
     private Connection conn;
 
-    private SelectionRoundFactory factory;
+    private SelectionRoundFactory selectionRoundFactory;
+    private RateFactorsFactory rateFactorsFactory;
 
     static final String TABLE_NAME = "selection_rounds";
     static final String COEFFICIENTS_TABLE_NAME = "rate_factor_coefficients";
 
 
-    public SelectionRoundDAO(Connection conn, SelectionRoundFactory factory) {
-        this.factory = factory;
+    public SelectionRoundDAO(Connection conn, SelectionRoundFactory factory, RateFactorsFactory rateFactorsFactory) {
+        this.selectionRoundFactory = factory;
+        this.rateFactorsFactory = rateFactorsFactory;
         this.conn = conn;
     }
 
@@ -35,10 +32,14 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
     public SelectionRound get(long id) {
         try {
 
-            String sql = "SELECT * FROM " + TABLE_NAME + " AS s " +
-                    "INNER JOIN " + COEFFICIENTS_TABLE_NAME + " as c " +
-                    "ON s.id = c.id_user " +
-                    "WHERE id = ?;";
+            String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
+                    "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
+                    "ON s.id = c.id_selection_round " +
+                    "WHERE s.id = ?;";
+
+//            SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM selection_rounds AS s LEFT JOIN rate_factor_coefficients AS c ON s.id = c.id_selection_round;
+
+
 
             PreparedStatement st = conn.prepareStatement(sql);
 
@@ -66,21 +67,77 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
 
     @Override
     public List<SelectionRound> getAll() {
-        return null;
+        try {
+
+            String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
+                    "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
+                    "ON s.id = c.id_selection_round;";
+
+            Statement st = conn.createStatement();
+            st.execute(sql);
+
+            ResultSet rs = st.getResultSet();
+
+            return getSelectionRoundsWithResultFactors(rs);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public SelectionRound save(SelectionRound selectionRound) throws Exception {
-        return null;
+
+        String sql = "INSERT INTO "
+                     + TABLE_NAME
+                     + " (id, selection_plan, start_date, end_date) VALUES (default, ?, ?, ?) RETURNING id;";
+
+        PreparedStatement st = conn.prepareStatement(sql);
+
+        st.setInt(1, selectionRound.getSelectionPlan());
+        st.setDate(2, (java.sql.Date)selectionRound.getStartDate());
+        st.setDate(3, (java.sql.Date)selectionRound.getEndDate());
+
+        st.execute();
+
+        ResultSet rs = st.getResultSet();
+
+        rs.next();
+
+        selectionRound.setId(rs.getLong("id"));
+        return selectionRound;
     }
 
     @Override
     public void update(SelectionRound selectionRound) throws Exception {
 
+        if (selectionRound.getId() == null) {
+            throw new NullPointerException("ID was not defined.");
+        }
+
+
+        String sql = "UPDATE " + TABLE_NAME + " SET selection_plan = ?, start_date = ?, end_date = ?  WHERE id = ?;";
+        PreparedStatement st = conn.prepareStatement(sql);
+
+        st.setInt(1, selectionRound.getSelectionPlan());
+        st.setDate(2, (java.sql.Date)selectionRound.getStartDate());
+        st.setDate(3, (java.sql.Date)selectionRound.getEndDate());
+
+        st.setLong(4, selectionRound.getId());
+
+        st.executeUpdate();
     }
 
     @Override
     public void delete(SelectionRound selectionRound) throws Exception {
+
+        if (selectionRound.getId() == null) {
+            throw new NullPointerException("ID was not defined.");
+        }
+
+        Utils.deleteCasadeById(selectionRound.getId(), TABLE_NAME, conn);
+
 
     }
 
@@ -99,12 +156,15 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
             }
 
 
-            float result = rs.getFloat("result");
+            float result = rs.getFloat("coefficient");
             String type = rs.getString("type");
             long coefficientId = rs.getLong("c_id");
 
-            RateFactorCoefficient rateFactorCoefficient = RateFactorsFactory.getInstance()
-                                                                            .createCoefficient(result, type);
+            if (type == null) {
+                continue;
+            }
+
+            RateFactorCoefficient rateFactorCoefficient = rateFactorsFactory.createCoefficient(result, type);
             rateFactorCoefficient.setId(coefficientId);
 
             coefficients.get(id).add(rateFactorCoefficient);
@@ -115,7 +175,7 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
         for (Long id: selectionRounds.keySet()) {
             SelectionRound sr = selectionRounds.get(id);
 
-            sr = factory.createSelectionRound(
+            sr = selectionRoundFactory.createSelectionRound(
                     sr.getSelectionPlan(), sr.getStartDate(), sr.getEndDate(), coefficients.get(id)
             );
 
@@ -134,8 +194,14 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
 
 
     private SelectionRound parseFromResultSet(ResultSet rs) throws SQLException {
-        // TODO: implements this sheet.
-        return null;
+
+        int selectionPlan = rs.getInt("selection_plan");
+        long id = rs.getLong("id");
+        Date startDate =  rs.getDate("start_date");
+        Date endDate = rs.getDate("end_date");
+
+
+        return selectionRoundFactory.createSelectionRound(selectionPlan, startDate, endDate, null);
     }
 
 }

@@ -2,7 +2,6 @@ package university.factories;
 
 import rateFactors.RateFactorCoefficient;
 import rateFactors.coefficients.SchoolCertificateCoefficient;
-import rateFactors.factories.RateFactorsFactory;
 import rateFactors.types.SchoolCertificateType;
 import university.SelectionRound;
 
@@ -15,6 +14,13 @@ public class SelectionRoundFactory {
     public SelectionRound createSelectionRound(
             int selectionPlan, Date startDate, Date endDate, List<RateFactorCoefficient> coefficients
     ) {
+
+        if (coefficients == null) {
+            return new SelectionRound(
+                    startDate, endDate, null, null, selectionPlan
+            );
+        }
+
 
         RateFactorCoefficient schoolCertificate = new SchoolCertificateCoefficient(0);
         List<RateFactorCoefficient> requiredExams = new ArrayList<>();

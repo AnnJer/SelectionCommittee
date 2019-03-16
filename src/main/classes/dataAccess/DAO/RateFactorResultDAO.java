@@ -15,10 +15,12 @@ public class RateFactorResultDAO implements DAO<RateFactorResult> {
 
 
     private Connection conn;
+    private RateFactorsFactory rateFactorsFactory;
     static final String TABLE_NAME = "rate_factor_results";
 
 
-    public RateFactorResultDAO(Connection conn) {
+    public RateFactorResultDAO(Connection conn, RateFactorsFactory factorsFactory) {
+        this.rateFactorsFactory = factorsFactory;
         this.conn = conn;
     }
 
@@ -132,7 +134,7 @@ public class RateFactorResultDAO implements DAO<RateFactorResult> {
         String type = rs.getString("type");
         long id = rs.getLong("id");
 
-        RateFactorResult rateFactorResult = RateFactorsFactory.getInstance().createResult(result, type);
+        RateFactorResult rateFactorResult = rateFactorsFactory.createResult(result, type);
         rateFactorResult.setId(id);
 
         return rateFactorResult;

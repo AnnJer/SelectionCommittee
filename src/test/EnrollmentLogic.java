@@ -1,3 +1,4 @@
+import dataAccess.DAO.SelectionRoundDAO;
 import dataAccess.DBAccessFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,23 +23,22 @@ public class EnrollmentLogic {
         Enrollee enrollee = new Enrollee(1, "Bob", "Bobson", "Kevin", "dd@h.j");
 
         List<RateFactorResult> exams = new ArrayList<>();
-        exams.add(new ExamResult(191, SubjectFactory.getInstance().createSubject("Math")));
-        exams.add(new ExamResult(190, SubjectFactory.getInstance().createSubject("Ukrainian")));
-        exams.add(new ExamResult(196, SubjectFactory.getInstance().createSubject("Physics")));
-        exams.add(new ExamResult(197, SubjectFactory.getInstance().createSubject("Chemistry")));
+        exams.add(new ExamResult(191, new Subject("Math")));
+        exams.add(new ExamResult(190, new Subject("Ukrainian")));
+        exams.add(new ExamResult(196, new Subject("Physics")));
+        exams.add(new ExamResult(197, new Subject("Chemistry")));
 
         enrollee.setExamResults(exams);
         enrollee.setSchoolCertificate(new SchoolCertificateResult(10.8f));
 
         return enrollee;
     }
-
 
     private Enrollee createEnrolleeWithOneExam() {
         Enrollee enrollee = new Enrollee(1, "Bob", "Bobson", "Kevin", "dd@h.j");
 
         List<RateFactorResult> exams = new ArrayList<>();
-        exams.add(new ExamResult(190, SubjectFactory.getInstance().createSubject("Ukrainian")));
+        exams.add(new ExamResult(190, new Subject("Ukrainian")));
 
         enrollee.setExamResults(exams);
         enrollee.setSchoolCertificate(new SchoolCertificateResult(10.8f));
@@ -46,13 +46,12 @@ public class EnrollmentLogic {
         return enrollee;
     }
 
-
     private SelectionRound createSelectionRound() {
 
         List<RateFactorCoefficient> exams = new ArrayList<>();
-        exams.add(new ExamCoefficient(0.4f, SubjectFactory.getInstance().createSubject("Math")));
-        exams.add(new ExamCoefficient(0.3f, SubjectFactory.getInstance().createSubject("Physics")));
-        exams.add(new ExamCoefficient(0.2f, SubjectFactory.getInstance().createSubject("Ukrainian")));
+        exams.add(new ExamCoefficient(0.4f, new Subject("Math")));
+        exams.add(new ExamCoefficient(0.3f, new Subject("Physics")));
+        exams.add(new ExamCoefficient(0.2f, new Subject("Ukrainian")));
 
 
         return  new SelectionRound(
@@ -100,22 +99,8 @@ public class EnrollmentLogic {
     public void testJDBC() {
         try {
 
-            Enrollee enr = DBAccessFactory.getInstance().getDAOFactory().getEnrolleeDAO().get(1);
-            enr.setSurname("Bobrikova");
-
-            DBAccessFactory.getInstance().getDAOFactory().getEnrolleeDAO().update(enr);
 
 
-            System.out.println(DBAccessFactory.getInstance().getDAOFactory().getEnrolleeDAO().get(1).getSchoolCertificate());
-
-            for (Enrollee e: DBAccessFactory.getInstance().getDAOFactory().getEnrolleeDAO().getAll()) {
-                System.out.println(e.getName() + " " + e.getSurname());
-
-                for (RateFactorResult r: e.getExamResults()) {
-                    System.out.println(r.getId() + " " + r.getResult() + " - " + r.getType());
-                }
-
-            }
 
         } catch (Exception e) {
             e.printStackTrace();

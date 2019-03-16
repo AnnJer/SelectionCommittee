@@ -29,13 +29,22 @@ public class RateFactorsFactory {
 
 
 
+    protected RateFactorsFactory () {
+        subjectFactory = SubjectFactory.getInstance();
+    }
+
+
+
+    private SubjectFactory subjectFactory;
+
+
     public RateFactorCoefficient createCoefficient(float coefficient, String type) {
-        if (type == SchoolCertificateType.TYPE_PREFIX) {
+        if (type.equals(SchoolCertificateType.TYPE_PREFIX)) {
             return new SchoolCertificateCoefficient(coefficient);
         } else if (type.contains(ExamType.TYPE_PREFIX + ExamType.TYPE_SEPARATOR)) {
             return new ExamCoefficient(
                     coefficient,
-                    SubjectFactory.getInstance().createSubject(type.split(RateFactorType.TYPE_SEPARATOR)[1])
+                    subjectFactory.createSubject(type.split(RateFactorType.TYPE_SEPARATOR)[1])
             );
         }
 
@@ -48,7 +57,7 @@ public class RateFactorsFactory {
             return new SchoolCertificateResult(result);
         } else if (type.contains(ExamType.TYPE_PREFIX + ExamType.TYPE_SEPARATOR)) {
             return new ExamResult(
-                    result, SubjectFactory.getInstance().createSubject(type.split(RateFactorType.TYPE_SEPARATOR)[1])
+                    result, subjectFactory.createSubject(type.split(RateFactorType.TYPE_SEPARATOR)[1])
             );
         }
 

@@ -2,8 +2,11 @@ package dataAccess.factories;
 
 import dataAccess.DAO.EnrolleeDAO;
 import dataAccess.DAO.RateFactorResultDAO;
+import dataAccess.DAO.SelectionRoundDAO;
 import dataAccess.DAO.SubjectDAO;
 import dataAccess.factories.DAOFactory;
+import rateFactors.factories.RateFactorsFactory;
+import university.factories.SelectionRoundFactory;
 
 import java.sql.Connection;
 
@@ -23,11 +26,16 @@ public class DBSingleDAOFactory implements DAOFactory {
 
     @Override
     public RateFactorResultDAO getRateFactorResultDAO() throws Exception {
-        return new RateFactorResultDAO(conn);
+        return new RateFactorResultDAO(conn, RateFactorsFactory.getInstance());
     }
 
     @Override
     public EnrolleeDAO getEnrolleeDAO() throws Exception {
         return new EnrolleeDAO(conn);
+    }
+
+    @Override
+    public SelectionRoundDAO getSelectionRoundDAO() throws Exception {
+        return new SelectionRoundDAO(conn, new SelectionRoundFactory(), RateFactorsFactory.getInstance());
     }
 }

@@ -1,9 +1,6 @@
 package dataAccess.factories;
 
-import dataAccess.DAO.EnrolleeDAO;
-import dataAccess.DAO.RateFactorResultDAO;
-import dataAccess.DAO.SelectionRoundDAO;
-import dataAccess.DAO.SubjectDAO;
+import dataAccess.DAO.*;
 import dataAccess.factories.DAOFactory;
 import rateFactors.factories.RateFactorsFactory;
 import university.factories.SelectionRoundFactory;
@@ -37,5 +34,10 @@ public class DBPoolDAOFactory implements DAOFactory {
     @Override
     public SelectionRoundDAO getSelectionRoundDAO() throws Exception {
         return new SelectionRoundDAO(ds.getConnection(), new SelectionRoundFactory(), RateFactorsFactory.getInstance());
+    }
+
+    @Override
+    public SessionDAO getSessionDAO() throws Exception {
+        return new SessionDAO(ds.getConnection());
     }
 }

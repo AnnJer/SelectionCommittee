@@ -1,11 +1,12 @@
 package user;
 
+import auth.Session;
 import dataAccess.Crypto;
 
 import java.security.CryptoPrimitive;
 import java.util.Date;
 
-public class User {
+public abstract class User {
 
     protected Long id;
 
@@ -82,4 +83,7 @@ public class User {
     public void setLogin(String login) {
         this.login = login;
     }
+
+
+    public abstract Session createSession();
 }

@@ -1,13 +1,14 @@
 package user;
 
+import auth.EnrolleeSession;
+import auth.Session;
+import dataAccess.Crypto;
 import rateFactors.RateFactorResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Enrollee extends User{
-
-
 
     protected List<RateFactorResult> examResults;
     protected RateFactorResult schoolCertificate;
@@ -40,5 +41,10 @@ public class Enrollee extends User{
         results.add(schoolCertificate);
 
         return results;
+    }
+
+    @Override
+    public Session createSession() {
+        return new EnrolleeSession(this, Crypto.createToken(this));
     }
 }

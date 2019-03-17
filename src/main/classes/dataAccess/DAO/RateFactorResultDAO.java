@@ -4,6 +4,8 @@ import rateFactors.RateFactorResult;
 import rateFactors.factories.RateFactorsFactory;
 import user.Enrollee;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RateFactorResultDAO implements DAO<RateFactorResult> {
+public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
 
 
     private Connection conn;
@@ -138,5 +140,14 @@ public class RateFactorResultDAO implements DAO<RateFactorResult> {
         rateFactorResult.setId(id);
 
         return rateFactorResult;
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

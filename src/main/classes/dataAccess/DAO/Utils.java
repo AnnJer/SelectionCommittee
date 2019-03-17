@@ -10,9 +10,12 @@ public class Utils {
         PreparedStatement st = conn.prepareStatement(sql);
 
         st.setLong(1, id);
-        st.execute();
 
-        return st.getResultSet();
+        st.execute();
+        st.close();
+        ResultSet rs = st.getResultSet();
+
+        return rs;
     }
 
     static ResultSet getAll(String table, Connection conn) throws SQLException {
@@ -20,7 +23,10 @@ public class Utils {
         Statement st = conn.createStatement();
 
         st.execute(sql);
-        return st.getResultSet();
+        st.close();
+        ResultSet rs = st.getResultSet();
+
+        return rs;
     }
 
 
@@ -31,6 +37,8 @@ public class Utils {
         st.setLong(1, id);
 
         st.executeUpdate();
+
+        st.close();
     }
 
 
@@ -41,6 +49,8 @@ public class Utils {
         st.setLong(1, id);
 
         st.executeUpdate();
+
+        st.close();
     }
 
 }

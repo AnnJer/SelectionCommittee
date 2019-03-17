@@ -5,12 +5,14 @@ import rateFactors.factories.RateFactorsFactory;
 import university.SelectionRound;
 import university.factories.SelectionRoundFactory;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-public class SelectionRoundDAO implements DAO<SelectionRound> {
+public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
 
 
 
@@ -232,4 +234,12 @@ public class SelectionRoundDAO implements DAO<SelectionRound> {
         return selectionRoundFactory.createSelectionRound(selectionPlan, startDate, endDate, null);
     }
 
+    @Override
+    public void close() throws IOException {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

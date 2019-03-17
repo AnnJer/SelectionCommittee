@@ -8,6 +8,8 @@ import university.SelectionRound;
 import university.factories.ApplicationManagerFactory;
 import university.factories.SelectionRoundFactory;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FacultyDAO implements DAO<Faculty> {
+public class FacultyDAO implements DAO<Faculty>, Closeable {
 
 
 
@@ -120,4 +122,12 @@ public class FacultyDAO implements DAO<Faculty> {
         return new Faculty(id, label, null, applicationManagerFactory.createApplicationManager());
     }
 
+    @Override
+    public void close() throws IOException {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

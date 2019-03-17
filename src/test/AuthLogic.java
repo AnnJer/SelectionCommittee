@@ -1,15 +1,20 @@
+import JSON.*;
 import auth.Session;
 import dataAccess.DBAccessFactory;
+import org.json.simple.JSONObject;
 import org.junit.Test;
 import user.Enrollee;
 import user.User;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AuthLogic {
 
 
 
     private User createUser() {
-        User user = new Enrollee(1, null, null, null, "111");
+        User user = new Enrollee(1L, null, null, null, "111");
         user.setPassword("111");
         return user;
     }
@@ -17,6 +22,24 @@ public class AuthLogic {
 
     @Test
     public void testUserLogin() {
+        JsonObject answer = new JsonObject();
+
+        answer.addValue("name", new JsonStringValue("Bob \"carl\""));
+        answer.addValue("age", new JsonNumber(12.5));
+        answer.addValue("marks", new JsonArray(new ArrayList<>() {
+            {
+                add(new JsonNumber(2));
+                add(new JsonNumber(3.5));
+            }
+        }));
+
+        answer.addValue("bbq", new JsonObject(new HashMap<>() {
+            {
+                put("source", new JsonStringValue("alt"));
+            }
+        }));
+
+        System.out.println(answer.encode());
 
     }
 

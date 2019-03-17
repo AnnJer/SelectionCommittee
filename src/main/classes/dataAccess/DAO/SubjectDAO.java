@@ -3,11 +3,13 @@ package dataAccess.DAO;
 import dataAccess.DAO.DAO;
 import university.Subject;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubjectDAO implements DAO<Subject> {
+public class SubjectDAO implements DAO<Subject>, Closeable {
 
 
     private Connection conn;
@@ -103,5 +105,14 @@ public class SubjectDAO implements DAO<Subject> {
         long id = rs.getLong("id");
 
         return new Subject(id, label);
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

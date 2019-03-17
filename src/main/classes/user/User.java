@@ -1,12 +1,17 @@
 package user;
 
+import JSON.JsonComponent;
+import JSON.JsonObject;
+import JSON.JsonSerializable;
+import JSON.JsonUtil;
 import auth.Session;
 import dataAccess.Crypto;
 
 import java.security.CryptoPrimitive;
 import java.util.Date;
+import java.util.HashMap;
 
-public abstract class User {
+public abstract class User implements JsonSerializable {
 
     protected Long id;
 
@@ -86,4 +91,19 @@ public abstract class User {
 
 
     public abstract Session createSession();
+
+
+
+    @Override
+    public JsonObject toJson() {
+        return JsonUtil.object(new HashMap<>() {
+            {
+               put("name", JsonUtil.string(name));
+               put("surname", JsonUtil.string(surname));
+               put("lastname", JsonUtil.string(lastname));
+
+               put("login", JsonUtil.string(login));
+            }
+        });
+    }
 }

@@ -2,9 +2,10 @@ package dataAccess.transactions;
 
 import dataAccess.factories.DAOFactory;
 
+import java.io.Closeable;
 import java.sql.SQLException;
 
-public abstract class Transaction {
+public abstract class Transaction implements Closeable {
 
 
     protected boolean isCommitted = false;

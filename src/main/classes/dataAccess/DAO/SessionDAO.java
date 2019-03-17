@@ -3,13 +3,15 @@ package dataAccess.DAO;
 import auth.Session;
 import user.Enrollee;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class SessionDAO implements DAO<Session> {
+public class SessionDAO implements DAO<Session>, Closeable {
 
 
     private Connection conn;
@@ -81,16 +83,22 @@ public class SessionDAO implements DAO<Session> {
     }
 
 
-
-    @Override
-    public void delete(Session session) throws Exception {
+    public void deleteByToken(String token) throws SQLException {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE token = ?";
 
         PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setString(1, session.getToken());
+        st.setString(1, token);
 
         st.executeUpdate();
+
+        st.close();
+    }
+
+
+    @Override
+    public void delete(Session session) throws Exception {
+        deleteByToken(session.getToken());
     }
 
     private Session parseFromResultSet(ResultSet rs) throws SQLException {
@@ -103,4 +111,12 @@ public class SessionDAO implements DAO<Session> {
     }
 
 
+    @Override
+    public void close() throws IOException {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

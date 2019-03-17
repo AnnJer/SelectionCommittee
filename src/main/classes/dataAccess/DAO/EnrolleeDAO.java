@@ -7,10 +7,12 @@ import rateFactors.types.SchoolCertificateType;
 import user.Enrollee;
 import user.User;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
-public class EnrolleeDAO implements DAO<Enrollee> {
+public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
 
     private Connection conn;
@@ -60,7 +62,7 @@ public class EnrolleeDAO implements DAO<Enrollee> {
     }
 
 
-    public Enrollee getByLoginAndPassword(User user) {
+    public Enrollee getByLoginAndPassword(String login, String password) {
 
         try {
 
@@ -73,8 +75,8 @@ public class EnrolleeDAO implements DAO<Enrollee> {
 
             PreparedStatement st = conn.prepareStatement(sql);
 
-            st.setString(1, user.getLogin());
-            st.setString(2, new String(user.getPassword()));
+            st.setString(1, login);
+            st.setString(2, password);
 
             st.execute();
 
@@ -264,5 +266,14 @@ public class EnrolleeDAO implements DAO<Enrollee> {
         String login = rs.getString("login");
 
         return new Enrollee(id, name, lastname, surname, login);
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

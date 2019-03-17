@@ -2,6 +2,7 @@ package dataAccess.transactions;
 
 import dataAccess.factories.DAOFactory;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -29,5 +30,14 @@ public class DataBaseTransaction extends Transaction {
     protected void commit() throws SQLException {
         conn.commit();
         conn.setAutoCommit(true);
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

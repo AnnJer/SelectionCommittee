@@ -1,5 +1,7 @@
 package user;
 
+import JSON.JsonComponent;
+import JSON.JsonObject;
 import auth.AdministratorSession;
 import auth.Session;
 import dataAccess.Crypto;
@@ -14,5 +16,10 @@ public class Administrator extends User{
     @Override
     public Session createSession() {
         return new AdministratorSession(this, Crypto.createToken(this));
+    }
+
+    @Override
+    public JsonObject toJson() {
+        return super.toJson();
     }
 }

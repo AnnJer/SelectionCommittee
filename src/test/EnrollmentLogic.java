@@ -20,7 +20,7 @@ public class EnrollmentLogic {
 
 
     private Enrollee createEnrollee() {
-        Enrollee enrollee = new Enrollee(1, "Bob", "Bobson", "Kevin", "dd@h.j");
+        Enrollee enrollee = new Enrollee(1L, "Bob", "Bobson", "Kevin", "dd@h.j");
 
         List<RateFactorResult> exams = new ArrayList<>();
         exams.add(new ExamResult(191, new Subject("Math")));
@@ -35,7 +35,7 @@ public class EnrollmentLogic {
     }
 
     private Enrollee createEnrolleeWithOneExam() {
-        Enrollee enrollee = new Enrollee(1, "Bob", "Bobson", "Kevin", "dd@h.j");
+        Enrollee enrollee = new Enrollee(1L, "Bob", "Bobson", "Kevin", "dd@h.j");
 
         List<RateFactorResult> exams = new ArrayList<>();
         exams.add(new ExamResult(190, new Subject("Ukrainian")));

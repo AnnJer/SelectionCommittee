@@ -1,9 +1,14 @@
 package auth;
 
 import dataAccess.DBAccessFactory;
+import json.JsonObject;
+import json.JsonSerializable;
+import json.JsonUtil;
 import user.User;
 
-public abstract class Session {
+import java.util.HashMap;
+
+public abstract class Session implements JsonSerializable {
 
 
     Long userId;
@@ -24,13 +29,13 @@ public abstract class Session {
     public static Session createSession(Long userId, String token, String type) {
 
         try {
-            if (type.equals(EnrolleeSession.ENROLLEE_TYPE)) {
+            if (type.equals(EnrolleeSession.SESSION_TYPE)) {
 
                 return new EnrolleeSession(
                         DBAccessFactory.getInstance().getDAOFactory().getEnrolleeDAO().get(userId),
                         token
                 );
-            } else if(type.equals(AdministratorSession.ADMIN_TYPE)) {
+            } else if(type.equals(AdministratorSession.SESSION_TYPE)) {
                 // TODO: implement Admin session
                 return new AdministratorSession(
                         null,
@@ -69,4 +74,17 @@ public abstract class Session {
     public void setType(String type) {
         this.type = type;
     }
+
+
+    @Override
+    public JsonObject toJson() {
+        return JsonUtil.object(new HashMap<>() {
+            {
+                put("token", JsonUtil.string(token));
+                put("type", JsonUtil.string(type));
+                put("user", getUser().toJson());
+            }
+        });
+    }
+
 }

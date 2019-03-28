@@ -1,4 +1,4 @@
-package dataAccess.DAO;
+package dataAccess.dao;
 
 import rateFactors.RateFactorCoefficient;
 import rateFactors.factories.RateFactorsFactory;

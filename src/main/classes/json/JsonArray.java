@@ -1,4 +1,4 @@
-package JSON;
+package json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class JsonArray implements JsonComponent {
     static final String END = "]";
     static final String SEPARATOR = ", ";
 
-    List<JsonComponent> values;
+    private List<JsonComponent> values;
 
 
     public JsonArray() {

@@ -1,7 +1,6 @@
-package dataAccess.DAO;
+package dataAccess.dao;
 
 import auth.Session;
-import user.Enrollee;
 
 import java.io.Closeable;
 import java.io.IOException;

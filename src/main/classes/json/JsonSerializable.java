@@ -1,4 +1,4 @@
-package JSON;
+package json;
 
 public interface JsonSerializable {
     JsonComponent toJson();

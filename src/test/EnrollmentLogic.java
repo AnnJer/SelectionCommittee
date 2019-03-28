@@ -1,5 +1,3 @@
-import dataAccess.DAO.SelectionRoundDAO;
-import dataAccess.DBAccessFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import rateFactors.RateFactorCoefficient;
@@ -9,7 +7,6 @@ import rateFactors.coefficients.SchoolCertificateCoefficient;
 import rateFactors.results.ExamResult;
 import rateFactors.results.SchoolCertificateResult;
 import university.*;
-import university.factories.SubjectFactory;
 import user.Enrollee;
 
 import java.util.ArrayList;

@@ -1,6 +1,5 @@
-package dataAccess.DAO;
+package dataAccess.dao;
 
-import dataAccess.DAO.DAO;
 import university.Subject;
 
 import java.io.Closeable;

@@ -1,6 +1,12 @@
 package rateFactors;
 
-public abstract class RateFactorCoefficient {
+import json.JsonObject;
+import json.JsonSerializable;
+import json.JsonUtil;
+
+import java.util.HashMap;
+
+public abstract class RateFactorCoefficient implements JsonSerializable {
 
     protected Long id;
     protected float coefficient;
@@ -36,5 +42,16 @@ public abstract class RateFactorCoefficient {
 
     public boolean isSuitable(RateFactorResult result) {
         return getType().equals(result.getType());
+    }
+
+
+    @Override
+    public JsonObject toJson() {
+        return JsonUtil.object(new HashMap<>() {
+            {
+                put("type", JsonUtil.string(getType().getType()));
+                put("coefficient", JsonUtil.number(coefficient));
+            }
+        });
     }
 }

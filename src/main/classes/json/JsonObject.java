@@ -1,4 +1,4 @@
-package JSON;
+package json;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ public class JsonObject implements JsonComponent {
     static final String KEY_BEGIN = "\"";
     static final String KEY_END = "\"";
 
-    Map<String, JsonComponent> values;
+    private Map<String, JsonComponent> values;
 
     public JsonObject() {
         values = new HashMap<>();

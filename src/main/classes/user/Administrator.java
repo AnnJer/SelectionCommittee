@@ -1,7 +1,6 @@
 package user;
 
-import JSON.JsonComponent;
-import JSON.JsonObject;
+import json.JsonObject;
 import auth.AdministratorSession;
 import auth.Session;
 import dataAccess.Crypto;

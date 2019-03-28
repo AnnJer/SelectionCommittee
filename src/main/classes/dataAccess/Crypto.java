@@ -21,7 +21,7 @@ public class Crypto {
 
     public static String createToken(User user) {
 
-        String input = user.getLogin() + new Date().toString();
+        String input = user.getLogin() + System.currentTimeMillis();
 
         MessageDigest md = null;
         try {

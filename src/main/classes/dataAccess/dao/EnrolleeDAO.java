@@ -1,11 +1,10 @@
-package dataAccess.DAO;
+package dataAccess.dao;
 
 import dataAccess.DBAccessFactory;
 import rateFactors.RateFactorResult;
 import rateFactors.factories.RateFactorsFactory;
 import rateFactors.types.SchoolCertificateType;
 import user.Enrollee;
-import user.User;
 
 import java.io.Closeable;
 import java.io.IOException;

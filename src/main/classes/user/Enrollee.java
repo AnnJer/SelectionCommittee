@@ -1,8 +1,7 @@
 package user;
 
-import JSON.JsonComponent;
-import JSON.JsonObject;
-import JSON.JsonUtil;
+import json.JsonObject;
+import json.JsonUtil;
 import auth.EnrolleeSession;
 import auth.Session;
 import dataAccess.Crypto;
@@ -64,12 +63,7 @@ public class Enrollee extends User{
             {
                 for (RateFactorResult result: getRateFactors()
                      ) {
-                    add(JsonUtil.object(new HashMap<>() {
-                        {
-                            put("result", JsonUtil.number(result.getResult()));
-                            put("type", JsonUtil.string(result.getType().getType()));
-                        }
-                    }));
+                    add(result.toJson());
                 }
             }
         }));

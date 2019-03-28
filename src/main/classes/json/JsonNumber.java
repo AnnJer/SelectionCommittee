@@ -1,4 +1,4 @@
-package JSON;
+package json;
 
 public class JsonNumber implements JsonComponent {
 

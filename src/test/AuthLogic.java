@@ -1,7 +1,4 @@
-import JSON.*;
-import auth.Session;
-import dataAccess.DBAccessFactory;
-import org.json.simple.JSONObject;
+import json.*;
 import org.junit.Test;
 import user.Enrollee;
 import user.User;

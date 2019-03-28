@@ -1,7 +1,6 @@
 package dataAccess.factories;
 
-import dataAccess.DAO.*;
-import dataAccess.factories.DAOFactory;
+import dataAccess.dao.*;
 import rateFactors.factories.RateFactorsFactory;
 import university.factories.SelectionRoundFactory;
 

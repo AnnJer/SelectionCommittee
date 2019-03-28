@@ -1,12 +1,9 @@
-package dataAccess.DAO;
+package dataAccess.dao;
 
 import dataAccess.DBAccessFactory;
-import rateFactors.factories.RateFactorsFactory;
-import university.ApplicationManager;
 import university.Faculty;
 import university.SelectionRound;
 import university.factories.ApplicationManagerFactory;
-import university.factories.SelectionRoundFactory;
 
 import java.io.Closeable;
 import java.io.IOException;

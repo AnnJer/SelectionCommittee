@@ -1,9 +1,6 @@
 package dataAccess.factories;
 
-import dataAccess.DAO.*;
-import user.Enrollee;
-
-import java.sql.SQLException;
+import dataAccess.dao.*;
 
 public interface DAOFactory {
 

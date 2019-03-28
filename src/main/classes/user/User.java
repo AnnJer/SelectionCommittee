@@ -1,14 +1,11 @@
 package user;
 
-import JSON.JsonComponent;
-import JSON.JsonObject;
-import JSON.JsonSerializable;
-import JSON.JsonUtil;
+import json.JsonObject;
+import json.JsonSerializable;
+import json.JsonUtil;
 import auth.Session;
 import dataAccess.Crypto;
 
-import java.security.CryptoPrimitive;
-import java.util.Date;
 import java.util.HashMap;
 
 public abstract class User implements JsonSerializable {

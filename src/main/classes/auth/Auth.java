@@ -1,7 +1,7 @@
 package auth;
 
-import dataAccess.DAO.EnrolleeDAO;
-import dataAccess.DAO.SessionDAO;
+import dataAccess.dao.EnrolleeDAO;
+import dataAccess.dao.SessionDAO;
 import dataAccess.DBAccessFactory;
 import dataAccess.DataAccessFactory;
 import user.Enrollee;
@@ -73,6 +73,14 @@ public class Auth {
             sessionDAO.deleteByToken(token);
         }
 
+    }
+
+    public boolean isSignedIn(String token) throws Exception {
+        try (
+                SessionDAO sessionDAO = dataAccessFactory.getDAOFactory().getSessionDAO()
+        ) {
+            return sessionDAO.getByToken(token) != null;
+        }
     }
 
 

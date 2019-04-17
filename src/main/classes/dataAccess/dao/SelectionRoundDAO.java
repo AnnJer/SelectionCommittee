@@ -33,6 +33,10 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
 
     @Override
     public SelectionRound get(long id) {
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
         try {
 
             String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
@@ -41,13 +45,13 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
                     "WHERE s.id = ?;";
 
 
-            PreparedStatement st = conn.prepareStatement(sql);
+            st = conn.prepareStatement(sql);
 
             st.setLong(1, id);
             st.execute();
 
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             List<SelectionRound> selectionRounds = getSelectionRoundsWithResultFactors(rs);
 
@@ -60,6 +64,20 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -67,22 +85,40 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
 
     @Override
     public List<SelectionRound> getAll() {
+
+        Statement st = null;
+        ResultSet rs = null;
+
         try {
 
             String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
                     "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
                     "ON s.id = c.id_selection_round;";
 
-            Statement st = conn.createStatement();
+            st = conn.createStatement();
             st.execute(sql);
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             return getSelectionRoundsWithResultFactors(rs);
 
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -136,6 +172,10 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
         rs.next();
 
         selectionRound.setId(rs.getLong("id"));
+
+        rs.close();
+        st.close();
+
         return selectionRound;
     }
 
@@ -157,6 +197,8 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
         st.setLong(4, selectionRound.getId());
 
         st.executeUpdate();
+
+        st.close();
     }
 
     @Override

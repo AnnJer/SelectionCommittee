@@ -21,9 +21,20 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
 
     @Override
     public Subject get(long id) {
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
         try {
 
-            ResultSet rs = Utils.getById(id, TABLE_NAME, conn);
+            String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
+            st = conn.prepareStatement(sql);
+
+            st.setLong(1, id);
+
+            st.execute();
+
+            rs = st.getResultSet();
 
             rs.next();
             return parseFromResultSet(rs);
@@ -31,14 +42,37 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public List<Subject> getAll() {
+
+        Statement st = null;
+        ResultSet rs = null;
+
+
         try {
 
-            ResultSet rs = Utils.getAll(TABLE_NAME, conn);
+            String sql = "SELECT * FROM " + TABLE_NAME + ";";
+            st = conn.createStatement();
+
+            st.execute(sql);
+            rs = st.getResultSet();
 
             List<Subject> subjects = new ArrayList<>();
 
@@ -51,6 +85,20 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -68,6 +116,10 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
         rs.next();
 
         subject.setId(rs.getLong("id"));
+
+        rs.close();
+        st.close();
+
         return subject;
     }
 
@@ -85,6 +137,8 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
         st.setLong(2, subject.getId());
 
         st.executeUpdate();
+
+        st.close();
     }
 
     @Override

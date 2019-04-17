@@ -27,6 +27,10 @@ public class UserDAO implements DAO<User>, Closeable {
 
     @Override
     public User get(long id) {
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
         try {
 
             String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
@@ -34,13 +38,13 @@ public class UserDAO implements DAO<User>, Closeable {
                     "ON u.id = r.id_user " +
                     "WHERE u.id = ?;";
 
-            PreparedStatement st = conn.prepareStatement(sql);
+            st = conn.prepareStatement(sql);
 
             st.setLong(1, id);
             st.execute();
 
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             List<User> users = getUsersListWithResultFactors(rs);
 
@@ -49,11 +53,28 @@ public class UserDAO implements DAO<User>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
 
     public User getByLoginAndPassword(String login, String password) {
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
 
         try {
 
@@ -62,14 +83,14 @@ public class UserDAO implements DAO<User>, Closeable {
                     "WHERE u.login = ? AND u.password = ?;";
 
 
-            PreparedStatement st = conn.prepareStatement(sql);
+            st = conn.prepareStatement(sql);
 
             st.setString(1, login);
             st.setString(2, password);
 
             st.execute();
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             List<User> users = getUsersListWithResultFactors(rs);
 
@@ -82,6 +103,20 @@ public class UserDAO implements DAO<User>, Closeable {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -105,23 +140,41 @@ public class UserDAO implements DAO<User>, Closeable {
 
     @Override
     public List<User> getAll() {
+
+        Statement st = null;
+        ResultSet rs = null;
+
         try {
 
             String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
                          "LEFT JOIN " + RATE_FACTORS_TABLE_NAME + " AS r ON r.id_user = u.id;";
 
 
-            Statement st = conn.createStatement();
+            st = conn.createStatement();
 
             st.execute(sql);
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             return getUsersListWithResultFactors(rs);
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -211,6 +264,9 @@ public class UserDAO implements DAO<User>, Closeable {
 
         user.setId(rs.getLong("id"));
 
+        rs.close();
+        st.close();
+
         return user;
     }
 
@@ -246,6 +302,8 @@ public class UserDAO implements DAO<User>, Closeable {
         st.setLong(1, enrollee.getId());
 
         st.executeUpdate();
+
+        st.close();
     }
 
     private User parseFromResultSet(ResultSet rs) throws SQLException {

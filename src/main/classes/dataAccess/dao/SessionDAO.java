@@ -33,18 +33,23 @@ public class SessionDAO implements DAO<Session>, Closeable {
 
 
     public Session getByToken(String token) {
+
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
         try {
 
             String sql = "SELECT * FROM " + TABLE_NAME + " WHERE token = ? AND NOW() < end_date;";
 
-            PreparedStatement st = conn.prepareStatement(sql);
+            st = conn.prepareStatement(sql);
 
             st.setString(1, token);
 
 
             st.execute();
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             if (!rs.next()) {
                 return null;
@@ -55,6 +60,20 @@ public class SessionDAO implements DAO<Session>, Closeable {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -74,6 +93,8 @@ public class SessionDAO implements DAO<Session>, Closeable {
 
 
         st.executeUpdate();
+
+        st.close();
 
         return session;
     }

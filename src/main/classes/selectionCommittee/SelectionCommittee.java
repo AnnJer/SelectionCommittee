@@ -120,6 +120,10 @@ public class SelectionCommittee {
                 ApplicationsDAO applicationDAO = dataAccessFactory.getDAOFactory().getApplicationDAO();
         ) {
 
+            if (token != null) {
+                throw new GuardException("Not authorized", ResponseWriterUtil.UNAUTHORIZED);
+            }
+
             User user = ServiceProvider.getInstance().getAuth().getSession(token).getUser();
 
             if (user == null) {

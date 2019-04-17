@@ -6,10 +6,7 @@ import user.Enrollee;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +42,9 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
             rateFactorResults.add(parseFromResultSet(rs));
         }
 
+        rs.close();
+        st.close();
+
         return rateFactorResults;
 
     }
@@ -52,9 +52,19 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
 
     @Override
     public RateFactorResult get(long id) {
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
         try {
 
-            ResultSet rs = Utils.getById(id, TABLE_NAME, conn);
+            String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
+            st = conn.prepareStatement(sql);
+
+            st.setLong(1, id);
+
+            st.execute();
+            rs = st.getResultSet();
 
             rs.next();
             return parseFromResultSet(rs);
@@ -62,14 +72,36 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public List<RateFactorResult> getAll() {
+
+        ResultSet rs = null;
+        Statement st = null;
+
         try {
 
-            ResultSet rs = Utils.getAll(TABLE_NAME, conn);
+            String sql = "SELECT * FROM " + TABLE_NAME + ";";
+            st = conn.createStatement();
+
+            st.execute(sql);
+            rs = st.getResultSet();
 
             List<RateFactorResult> rateFactorResults = new ArrayList<>();
 
@@ -82,6 +114,20 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -101,6 +147,9 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         rs.next();
         rateFactorResult.setId(rs.getLong("id"));
 
+        rs.close();
+        st.close();
+
         return rateFactorResult;
     }
 
@@ -118,6 +167,8 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         st.setLong(2, rateFactorResult.getId());
 
         st.executeUpdate();
+
+        st.close();
     }
 
     @Override
@@ -137,6 +188,8 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         st.setLong(1, id);
 
         st.execute();
+
+        st.close();
     }
 
     public void batchInsert(List<RateFactorResult> results, long userId) throws Exception {

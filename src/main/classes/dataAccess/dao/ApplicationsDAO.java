@@ -33,6 +33,9 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
     @Override
     public Application get(long id) {
 
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
         try {
 
             String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
@@ -40,12 +43,12 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
                          "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                          "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE a.id = ?;";
 
-            PreparedStatement st = conn.prepareStatement(sql);
+            st = conn.prepareStatement(sql);
 
             st.setLong(1, id);
 
             st.execute();
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             if (!rs.next()) {
                 return null;
@@ -56,12 +59,29 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
 
     public Application getByUserId(long id) {
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
 
         try {
 
@@ -70,12 +90,12 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
                     "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                     "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE u.id = ?;";
 
-            PreparedStatement st = conn.prepareStatement(sql);
+            st = conn.prepareStatement(sql);
 
             st.setLong(1, id);
 
             st.execute();
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
             if (!rs.next()) {
                 return null;
@@ -86,11 +106,28 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
     public List<Application> getByFacultyId(long id) {
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
 
         try {
 
@@ -99,13 +136,13 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
                     "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                     "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE f.id = ?;";
 
-            PreparedStatement st = conn.prepareStatement(sql);
+            st = conn.prepareStatement(sql);
 
             st.setLong(1, id);
 
             st.execute();
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
 
             List<Application> applications = new ArrayList<>();
@@ -119,6 +156,20 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -127,6 +178,10 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
     @Override
     public List<Application> getAll() {
+
+        Statement st = null;
+        ResultSet rs = null;
+
         try {
 
             String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
@@ -134,11 +189,11 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
                     "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                     "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id;";
 
-            Statement st = conn.createStatement();
+            st = conn.createStatement();
 
             st.execute(sql);
 
-            ResultSet rs = st.getResultSet();
+            rs = st.getResultSet();
 
 
             List<Application> applications = new ArrayList<>();
@@ -152,6 +207,20 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -161,15 +230,18 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
                 " (rating, id_faculty, id_user, c_date) VALUES (?, ?, ?, now());";
 
 
-        PreparedStatement st = conn.prepareStatement(sql);
+        try (
+                PreparedStatement st = conn.prepareStatement(sql)
+                ){
+            st.setFloat(1, application.getRating());
+            st.setLong(2, application.getFaculty().getId());
+            st.setLong(3, application.getUser().getId());
 
-        st.setFloat(1, application.getRating());
-        st.setLong(2, application.getFaculty().getId());
-        st.setLong(3, application.getUser().getId());
+            st.executeUpdate();
 
-        st.executeUpdate();
+            return application;
+        }
 
-        return application;
     }
 
     @Override

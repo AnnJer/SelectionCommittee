@@ -7,9 +7,7 @@ import selectionCommittee.factories.ApplicationManagerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,9 +31,19 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
     @Override
     public Faculty get(long id) {
 
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
         try {
 
-            ResultSet rs = Utils.getById(id, TABLE_NAME, conn);
+            String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
+            st = conn.prepareStatement(sql);
+
+            st.setLong(1, id);
+
+            st.execute();
+
+            rs = st.getResultSet();
 
             if (!rs.next()) {
                 return null;
@@ -58,17 +66,38 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public List<Faculty> getAll() {
 
+        Statement st = null;
+        ResultSet rs = null;
+
         Map<Long, Faculty> selectionRoundIdToFacultyMap = new HashMap<>();
 
         try {
 
-            ResultSet rs = Utils.getAll(TABLE_NAME, conn);
+            String sql = "SELECT * FROM " + TABLE_NAME + ";";
+            st = conn.createStatement();
+
+            st.execute(sql);
+            rs = st.getResultSet();
 
             while(rs.next()) {
                 long idSelectionRound = rs.getLong("id_selection_round");
@@ -105,6 +134,20 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+
+                if (st != null) {
+                    st.close();
+                }
+
+                if (rs != null) {
+                    rs.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

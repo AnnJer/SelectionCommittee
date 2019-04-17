@@ -1,6 +1,19 @@
 package user;
 
 public enum UserRoles {
-    ENROLLEE,
-    ADMINISTRATOR
+    ENROLLEE ("enrollee"),
+    ADMINISTRATOR ("admin");
+
+    private String role;
+
+    UserRoles(String role) {
+        this.role = role;
+    }
+
+
+    @Override
+    public String toString() {
+        return role;
+    }
+
 }

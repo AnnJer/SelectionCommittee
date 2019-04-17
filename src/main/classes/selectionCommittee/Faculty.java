@@ -26,6 +26,7 @@ public class Faculty implements JsonSerializable {
 
 
     public boolean isCanApply(Enrollee enrollee) {
+
         if(selectionRound != null) {
             return selectionRound.isCanApply(enrollee);
         }

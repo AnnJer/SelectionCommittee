@@ -27,8 +27,8 @@ public class DBSingleDAOFactory implements DAOFactory {
     }
 
     @Override
-    public EnrolleeDAO getEnrolleeDAO() throws Exception {
-        return new EnrolleeDAO(conn);
+    public UserDAO getUserDAO() throws Exception {
+        return new UserDAO(conn);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package auth;
 
-import dataAccess.dao.EnrolleeDAO;
+import dataAccess.dao.UserDAO;
 import dataAccess.dao.SessionDAO;
 import dataAccess.DBAccessFactory;
 import dataAccess.DataAccessFactory;
@@ -34,16 +34,16 @@ public class Auth {
     public Session signIn(String login, String password) throws Exception {
 
         try (
-                EnrolleeDAO enrolleeDAO = dataAccessFactory.getDAOFactory().getEnrolleeDAO();
+                UserDAO userDAO = dataAccessFactory.getDAOFactory().getUserDAO();
                 SessionDAO sessionDAO = dataAccessFactory.getDAOFactory().getSessionDAO()
                 ) {
-            Enrollee enrollee = enrolleeDAO.getByLoginAndPassword(login, password);
+            User user = userDAO.getByLoginAndPassword(login, password);
 
-            if (enrollee == null) {
+            if (user == null) {
                 return null;
             }
 
-            Session session = enrollee.createSession();
+            Session session = user.createSession();
 
             sessionDAO.save(session);
             return session;
@@ -54,13 +54,13 @@ public class Auth {
 
     public Session signUp(User user) throws Exception {
         try (
-                EnrolleeDAO enrolleeDAO = dataAccessFactory.getDAOFactory().getEnrolleeDAO()
+                UserDAO userDAO = dataAccessFactory.getDAOFactory().getUserDAO()
                 ) {
-            Enrollee enrollee = new Enrollee(user.getId(), user.getName(), user.getLastname(), user.getSurname(), user.getLogin());
-            enrollee.setPassword(new String(user.getPassword()));
-            enrollee = enrolleeDAO.save(enrollee);
+            user = new Enrollee(user.getId(), user.getName(), user.getLastname(), user.getSurname(), user.getLogin());
+            user.setPassword(new String(user.getPassword()));
+            user = userDAO.save(user);
 
-            return enrollee.createSession();
+            return user.createSession();
         }
     }
 

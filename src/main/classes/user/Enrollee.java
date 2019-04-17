@@ -62,13 +62,17 @@ public class Enrollee extends User{
 
     @Override
     public JsonObject toJson() {
+
         JsonObject json = super.toJson();
 
         json.addValue("rateFactors", JsonUtil.array(new ArrayList<>() {
             {
                 for (RateFactorResult result: getRateFactors()
                      ) {
-                    add(result.toJson());
+
+                    if (result != null) {
+                        add(result.toJson());
+                    }
                 }
             }
         }));

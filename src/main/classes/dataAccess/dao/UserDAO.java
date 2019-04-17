@@ -1,36 +1,38 @@
 package dataAccess.dao;
 
-import dataAccess.DBAccessFactory;
 import rateFactors.RateFactorResult;
 import rateFactors.factories.RateFactorsFactory;
 import rateFactors.types.SchoolCertificateType;
 import user.Enrollee;
+import user.User;
+import user.UserFactory;
+import user.UserRoles;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
-public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
+public class UserDAO implements DAO<User>, Closeable {
 
 
     private Connection conn;
-    static final String SUPER_TABLE_NAME = "users";
-    static final String TABLE_NAME = "enrollee";
+    static final String TABLE_NAME = "users";
+    static final String RATE_FACTORS_TABLE_NAME = "rate_factor_results";
 
 
-    public EnrolleeDAO(Connection conn) {
+    public UserDAO(Connection conn) {
         this.conn = conn;
     }
 
     @Override
-    public Enrollee get(long id) {
+    public User get(long id) {
         try {
 
-            String sql = "SELECT * FROM " + TABLE_NAME +
-                    " INNER JOIN " + SUPER_TABLE_NAME +
-                    " ON " + SUPER_TABLE_NAME + ".id = " + TABLE_NAME + ".id_user " +
-                    " WHERE id = ?;";
+            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
+                    "LEFT JOIN " + RATE_FACTORS_TABLE_NAME + " AS r " +
+                    "ON u.id = r.id_user " +
+                    "WHERE u.id = ?;";
 
             PreparedStatement st = conn.prepareStatement(sql);
 
@@ -40,43 +42,23 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
             ResultSet rs = st.getResultSet();
 
-            if (!rs.next()) {
-                return null;
-            }
+            List<User> users = getUsersListWithResultFactors(rs);
 
-            Enrollee enrollee = parseFromResultSet(rs);
+            return users.size() > 0 ? users.get(0) : null;
 
-            List<RateFactorResult> results;
-
-            try (
-            RateFactorResultDAO rateFactorResultDAO = DBAccessFactory.getInstance()
-                    .getDAOFactory()
-                    .getRateFactorResultDAO()
-            ) {
-                results = rateFactorResultDAO.getByEnrollee(enrollee);
-            }
-
-
-            enrollee.setSchoolCertificate(getAndRemoveFromListSchoolCertificateResult(results));
-            enrollee.setExamResults(results);
-
-            return enrollee;
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
     }
 
 
-    public Enrollee getByLoginAndPassword(String login, String password) {
+    public User getByLoginAndPassword(String login, String password) {
 
         try {
 
-            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS e " +
-                    "INNER JOIN " + SUPER_TABLE_NAME + " AS u " +
-                    " ON u.id = e.id_user " +
-                    "LEFT JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = e.id_user " +
+            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
+                    "LEFT JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = u.id " +
                     "WHERE u.login = ? AND u.password = ?;";
 
 
@@ -89,13 +71,13 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
             ResultSet rs = st.getResultSet();
 
-            List<Enrollee> enrollees = getEnrolleeListWithResultFactors(rs);
+            List<User> users = getUsersListWithResultFactors(rs);
 
-            if (enrollees.size() < 1) {
+            if (users.size() < 1) {
                 return null;
             }
 
-            return enrollees.get(0);
+            return users.get(0);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,13 +104,11 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
 
     @Override
-    public List<Enrollee> getAll() {
+    public List<User> getAll() {
         try {
 
-            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS e " +
-                    "INNER JOIN " + SUPER_TABLE_NAME + " AS u " +
-                    " ON u.id = e.id_user " +
-                    "LEFT JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = e.id_user;";
+            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
+                         "LEFT JOIN " + RATE_FACTORS_TABLE_NAME + " AS r ON r.id_user = u.id;";
 
 
             Statement st = conn.createStatement();
@@ -137,7 +117,7 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
             ResultSet rs = st.getResultSet();
 
-            return getEnrolleeListWithResultFactors(rs);
+            return getUsersListWithResultFactors(rs);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,17 +127,17 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
 
 
-    List<Enrollee> getEnrolleeListWithResultFactors(ResultSet rs) throws SQLException {
+    List<User> getUsersListWithResultFactors(ResultSet rs) throws SQLException {
 
-        Map<Long, Enrollee> enrolleeList = new HashMap<>();
+        Map<Long, User> userHashMapList = new HashMap<>();
         Map<Long, List<RateFactorResult>> results = new HashMap<>();
 
         while(rs.next()) {
 
             long id = rs.getLong("id");
 
-            if (!enrolleeList.containsKey(id)) {
-                enrolleeList.put(id, parseFromResultSet(rs));
+            if (!userHashMapList.containsKey(id)) {
+                userHashMapList.put(id, parseFromResultSet(rs));
                 results.put(id, new ArrayList<>());
             }
 
@@ -178,16 +158,24 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
 
 
-        for (Long id: enrolleeList.keySet()) {
-            enrolleeList.get(id).setSchoolCertificate(
+        for (Long id: userHashMapList.keySet()) {
+
+            if (userHashMapList.get(id).getRole() == UserRoles.ADMINISTRATOR) {
+                continue;
+            }
+
+            Enrollee enrollee = (Enrollee) userHashMapList.get(id);
+
+
+            enrollee.setSchoolCertificate(
                     getAndRemoveFromListSchoolCertificateResult(results.get(id))
             );
 
-            enrolleeList.get(id).setExamResults(results.get(id));
+            enrollee.setExamResults(results.get(id));
         }
 
 
-        return new ArrayList<>(enrolleeList.values());
+        return new ArrayList<>(userHashMapList.values());
     }
 
 
@@ -198,19 +186,20 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
         WARNING: IT DOESNT SAVE RATE FACTORS (@see table rate_factor_results);
      */
     @Override
-    public Enrollee save(Enrollee enrollee) throws Exception {
+    public User save(User user) throws Exception {
 
-        String sql = "INSERT INTO " + SUPER_TABLE_NAME +
-                " (id, name, surname, lastname, login, password) VALUES (default, ?, ?, ?, ?, ?) RETURNING id;";
+        String sql = "INSERT INTO " + TABLE_NAME +
+                " (name, surname, lastname, login, password, role) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;";
 
 
         PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setString(1, enrollee.getName());
-        st.setString(2, enrollee.getSurname());
-        st.setString(3, enrollee.getLastname());
-        st.setString(4, enrollee.getLogin());
-        st.setBytes(5, enrollee.getPassword());
+        st.setString(1, user.getName());
+        st.setString(2, user.getSurname());
+        st.setString(3, user.getLastname());
+        st.setString(4, user.getLogin());
+        st.setBytes(5, user.getPassword());
+        st.setString(5, user.getRole().toString());
 
         st.execute();
 
@@ -220,26 +209,20 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
             return null;
         }
 
-        enrollee.setId(rs.getLong("id"));
+        user.setId(rs.getLong("id"));
 
-        sql = "INSERT INTO " + TABLE_NAME +
-                " (id, id_user) VALUES (?);";
-
-        st = conn.prepareStatement(sql);
-        st.setLong(1, enrollee.getId());
-
-        return enrollee;
+        return user;
     }
 
     @Override
-    public void update(Enrollee enrollee) throws Exception {
+    public void update(User enrollee) throws Exception {
 
 
         if (enrollee.getId() == null) {
             throw new NullPointerException("ID was not defined.");
         }
 
-        String sql = "UPDATE " + SUPER_TABLE_NAME + " SET name = ?, surname = ?, lastname = ? WHERE id = ?;";
+        String sql = "UPDATE " + TABLE_NAME + " SET name = ?, surname = ?, lastname = ? WHERE id = ?;";
         PreparedStatement st = conn.prepareStatement(sql);
 
         st.setString(1, enrollee.getName());
@@ -251,7 +234,7 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
     }
 
     @Override
-    public void delete(Enrollee enrollee) throws Exception {
+    public void delete(User enrollee) throws Exception {
 
         if (enrollee.getId() == null) {
             throw new NullPointerException("ID was not defined.");
@@ -265,16 +248,21 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
         st.executeUpdate();
     }
 
-    private Enrollee parseFromResultSet(ResultSet rs) throws SQLException {
+    private User parseFromResultSet(ResultSet rs) throws SQLException {
+
+        long id = rs.getLong("id");
+
         String name = rs.getString("name");
         String surname = rs.getString("surname");
         String lastname = rs.getString("lastname");
 
-        long id = rs.getLong("id");
 
         String login = rs.getString("login");
 
-        return new Enrollee(id, name, lastname, surname, login);
+        String role = rs.getString("role");
+
+
+        return UserFactory.getInstance().createUser(id, name, lastname, surname, login, role);
     }
 
     @Override

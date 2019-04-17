@@ -6,7 +6,7 @@ public interface DAOFactory {
 
     SubjectDAO getSubjectDAO() throws Exception;
     RateFactorResultDAO getRateFactorResultDAO() throws Exception;
-    EnrolleeDAO getEnrolleeDAO() throws Exception;
+    UserDAO getUserDAO() throws Exception;
     SelectionRoundDAO getSelectionRoundDAO() throws Exception;
     SessionDAO getSessionDAO() throws Exception;
     FacultyDAO getFacultyDAO() throws Exception;

@@ -27,10 +27,10 @@ public class ApplicationManager {
 
     public boolean isValidApplication(Application application) throws Exception {
 
-        Application existAppl = ServiceProvider.getInstance()
+        Application existApplication = ServiceProvider.getInstance()
                 .getSelectionCommittee().getApplicationByUser(application.getUser().getId());
 
-        if (existAppl != null) {
+        if (existApplication != null) {
             return false;
         }
 

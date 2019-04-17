@@ -134,6 +134,10 @@ public class SelectionCommittee {
 
             Faculty faculty = ServiceProvider.getInstance().getSelectionCommittee().getFacultyById(facultyId);
 
+            if (!faculty.isCanApply(enrollee)) {
+                throw new GuardException("You can`t apply to this faculty.");
+            }
+
             float rating = faculty.selectionRound.calcRating(enrollee);
 
             if (faculty.selectionRound.getEndDate().before(new Date())) {
@@ -143,7 +147,7 @@ public class SelectionCommittee {
             Application application = new Application(faculty, enrollee, rating, null);
 
             if (!faculty.applicationManager.isValidApplication(application)) {
-                throw new GuardException("You have already get application to other faculty. Only 1 application allowed.");
+                throw new GuardException("You have already get application to other faculty.\n Only 1 application allowed.");
             }
 
             applicationDAO.save(application);

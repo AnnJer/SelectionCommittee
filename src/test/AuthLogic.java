@@ -42,11 +42,11 @@ public class AuthLogic {
 //
 //        System.out.println(answer.encode());
 
-//        try {
-//            System.out.println(DBAccessFactory.getInstance().getDAOFactory().getApplicationDAO().getByUserId(1).getRating());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            System.out.println(DBAccessFactory.getInstance().getDAOFactory().getUserDAO().get(1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
 //        try {
@@ -55,7 +55,7 @@ public class AuthLogic {
 //            e.printStackTrace();
 //        }
 
-        System.out.println(new String(Crypto.encodePassword("222".getBytes(), "222".getBytes())));
+//        System.out.println(new String(Crypto.encodePassword("222".getBytes(), "222".getBytes())));
 
     }
 

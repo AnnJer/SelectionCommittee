@@ -27,8 +27,8 @@ public class DBPoolDAOFactory implements DAOFactory {
     }
 
     @Override
-    public EnrolleeDAO getEnrolleeDAO() throws Exception {
-        return new EnrolleeDAO(ds.getConnection());
+    public UserDAO getUserDAO() throws Exception {
+        return new UserDAO(ds.getConnection());
     }
 
     @Override

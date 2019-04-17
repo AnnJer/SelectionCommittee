@@ -35,7 +35,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
         try {
 
-            String sql = "SELECT a.id, a.rating, a.cdate, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
                          "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
                          "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                          "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE a.id = ?;";
@@ -65,7 +65,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
         try {
 
-            String sql = "SELECT a.id, a.rating, a.cdate, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
                     "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
                     "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                     "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE u.id = ?;";
@@ -94,7 +94,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
         try {
 
-            String sql = "SELECT a.id, a.rating, a.cdate, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
                     "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
                     "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                     "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE f.id = ?;";
@@ -129,7 +129,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
     public List<Application> getAll() {
         try {
 
-            String sql = "SELECT a.id, a.rating, a.cdate, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
                     "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
                     "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                     "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id;";
@@ -158,7 +158,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
     @Override
     public Application save(Application application) throws Exception {
         String sql = "INSERT INTO " + TABLE_NAME +
-                " (rating, id_faculty, id_user, cdate) VALUES (?, ?, ?, now());";
+                " (rating, id_faculty, id_user, c_date) VALUES (?, ?, ?, now());";
 
 
         PreparedStatement st = conn.prepareStatement(sql);
@@ -187,7 +187,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
         long id = rs.getLong("id");
         float rating = rs.getFloat("rating");
-        Date date = rs.getDate("cdate");
+        Date date = rs.getDate("c_date");
 
         String name = rs.getString("name");
         String lastname = rs.getString("lastname");

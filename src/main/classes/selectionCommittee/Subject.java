@@ -1,6 +1,12 @@
-package university;
+package selectionCommittee;
 
-public class Subject {
+import json.JsonComponent;
+import json.JsonSerializable;
+import json.JsonUtil;
+
+import java.util.HashMap;
+
+public class Subject implements JsonSerializable {
 
     protected Long id;
     protected String label;
@@ -30,5 +36,15 @@ public class Subject {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public JsonComponent toJson() {
+        return JsonUtil.object(new HashMap<>() {
+            {
+                put("id", JsonUtil.number(id));
+                put("label", JsonUtil.string(label));
+            }
+        });
     }
 }

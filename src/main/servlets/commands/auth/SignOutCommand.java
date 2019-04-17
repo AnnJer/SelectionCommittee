@@ -2,6 +2,8 @@ package commands.auth;
 
 import auth.Auth;
 import commands.Command;
+import common.ResponseWriterUtil;
+import common.ServiceProvider;
 import common.exceptions.GuardException;
 import json.JsonComponent;
 import json.JsonUtil;
@@ -15,8 +17,8 @@ public class SignOutCommand implements Command {
     private Auth auth;
 
 
-    public SignOutCommand(Auth auth) {
-        this.auth = auth;
+    public SignOutCommand() {
+        this.auth = ServiceProvider.getInstance().getAuth();
     }
 
     @Override
@@ -31,7 +33,7 @@ public class SignOutCommand implements Command {
         try {
             auth.signOut(token);
         } catch (Exception e) {
-            throw new GuardException("Something go wrong");
+            throw new GuardException("Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }
 
         return JsonUtil.object();

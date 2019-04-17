@@ -2,7 +2,8 @@ package dataAccess.factories;
 
 import dataAccess.dao.*;
 import rateFactors.factories.RateFactorsFactory;
-import university.factories.SelectionRoundFactory;
+import selectionCommittee.factories.ApplicationManagerFactory;
+import selectionCommittee.factories.SelectionRoundFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -38,5 +39,15 @@ public class DBPoolDAOFactory implements DAOFactory {
     @Override
     public SessionDAO getSessionDAO() throws Exception {
         return new SessionDAO(ds.getConnection());
+    }
+
+    @Override
+    public FacultyDAO getFacultyDAO() throws Exception {
+        return new FacultyDAO(ds.getConnection(), new ApplicationManagerFactory());
+    }
+
+    @Override
+    public ApplicationsDAO getApplicationDAO() throws Exception {
+        return new ApplicationsDAO(ds.getConnection());
     }
 }

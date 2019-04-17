@@ -9,7 +9,7 @@ import rateFactors.results.ExamResult;
 import rateFactors.results.SchoolCertificateResult;
 import rateFactors.types.ExamType;
 import rateFactors.types.SchoolCertificateType;
-import university.factories.SubjectFactory;
+import selectionCommittee.factories.SubjectFactory;
 
 public class RateFactorsFactory {
 

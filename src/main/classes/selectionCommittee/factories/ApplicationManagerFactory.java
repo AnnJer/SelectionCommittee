@@ -1,6 +1,6 @@
-package university.factories;
+package selectionCommittee.factories;
 
-import university.ApplicationManager;
+import selectionCommittee.ApplicationManager;
 
 public class ApplicationManagerFactory {
 

@@ -12,7 +12,7 @@ public class Utils {
         st.setLong(1, id);
 
         st.execute();
-        st.close();
+//        st.close();
         ResultSet rs = st.getResultSet();
 
         return rs;
@@ -23,8 +23,8 @@ public class Utils {
         Statement st = conn.createStatement();
 
         st.execute(sql);
-        st.close();
         ResultSet rs = st.getResultSet();
+//        st.close();
 
         return rs;
     }
@@ -42,7 +42,7 @@ public class Utils {
     }
 
 
-    static void deleteCasadeById(long id, String table, Connection conn) throws SQLException {
+    static void deleteCascadeById(long id, String table, Connection conn) throws SQLException {
         String sql = "DELETE FROM " + table + " WHERE id = ? CASCADE;";
         PreparedStatement st = conn.prepareStatement(sql);
 

@@ -46,7 +46,10 @@ public class SessionDAO implements DAO<Session>, Closeable {
 
             ResultSet rs = st.getResultSet();
 
-            rs.next();
+            if (!rs.next()) {
+                return null;
+            }
+
             return parseFromResultSet(rs);
 
         } catch (Exception e) {

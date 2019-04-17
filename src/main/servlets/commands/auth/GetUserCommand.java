@@ -3,6 +3,7 @@ package commands.auth;
 import auth.Auth;
 import auth.Session;
 import commands.Command;
+import common.ServiceProvider;
 import common.exceptions.GuardException;
 import common.viewEvents.factories.ViewEventFactory;
 import json.JsonComponent;
@@ -14,13 +15,14 @@ public class GetUserCommand implements Command {
 
     private Auth auth;
 
-    public GetUserCommand(Auth auth) {
-        this.auth = auth;
+    public GetUserCommand() {
+        this.auth = ServiceProvider.getInstance().getAuth();
     }
 
     @Override
     public JsonComponent execute(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
-        String token = req.getParameter("token");
+
+        String token = (String) req.getAttribute("token");
 
         if (token == null) {
             throw new GuardException("Token is missed");

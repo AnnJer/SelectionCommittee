@@ -3,7 +3,7 @@ package rateFactors.factories;
 import rateFactors.RateFactorType;
 import rateFactors.types.ExamType;
 import rateFactors.types.SchoolCertificateType;
-import university.Subject;
+import selectionCommittee.Subject;
 
 
 import java.util.HashMap;

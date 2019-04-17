@@ -1,9 +1,9 @@
-package university.factories;
+package selectionCommittee.factories;
 
 import rateFactors.RateFactorCoefficient;
 import rateFactors.coefficients.SchoolCertificateCoefficient;
 import rateFactors.types.SchoolCertificateType;
-import university.SelectionRound;
+import selectionCommittee.SelectionRound;
 
 import java.util.ArrayList;
 import java.util.Date;

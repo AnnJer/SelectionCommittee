@@ -1,6 +1,6 @@
-package university.factories;
+package selectionCommittee.factories;
 
-import university.Subject;
+import selectionCommittee.Subject;
 
 public class SubjectFactory {
 

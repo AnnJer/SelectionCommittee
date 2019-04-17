@@ -1,9 +1,9 @@
 package dataAccess.dao;
 
 import dataAccess.DBAccessFactory;
-import university.Faculty;
-import university.SelectionRound;
-import university.factories.ApplicationManagerFactory;
+import selectionCommittee.Faculty;
+import selectionCommittee.SelectionRound;
+import selectionCommittee.factories.ApplicationManagerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
 
     private ApplicationManagerFactory applicationManagerFactory;
 
-    static final String TABLE_NAME = "selection_rounds";
+    static final String TABLE_NAME = "faculties";
 
     public FacultyDAO(Connection conn, ApplicationManagerFactory applicationManagerFactory) {
         this.conn = conn;
@@ -37,17 +37,21 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
 
             ResultSet rs = Utils.getById(id, TABLE_NAME, conn);
 
-            rs.next();
+            if (!rs.next()) {
+                return null;
+            }
 
             long idSelectionRound = rs.getLong("id_selection_round");
 
             Faculty faculty = parseFromResultSet(rs);
 
-            faculty.setSelectionRound(DBAccessFactory.getInstance()
-                                                     .getDAOFactory()
-                                                     .getSelectionRoundDAO()
-                                                     .get(idSelectionRound)
-            );
+            try (
+                    SelectionRoundDAO selectionRoundDAO = DBAccessFactory.getInstance()
+                            .getDAOFactory()
+                            .getSelectionRoundDAO()
+                    ) {
+                faculty.setSelectionRound(selectionRoundDAO.get(idSelectionRound));
+            }
 
             return faculty;
 
@@ -74,16 +78,26 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
                 selectionRoundIdToFacultyMap.put(idSelectionRound, faculty);
             }
 
+            if (selectionRoundIdToFacultyMap.size() > 0) {
 
-            List<SelectionRound> selectionRounds = DBAccessFactory.getInstance()
-                    .getDAOFactory()
-                    .getSelectionRoundDAO()
-                    .getByIdList(new ArrayList<>(selectionRoundIdToFacultyMap.keySet()));
+                List<SelectionRound> selectionRounds;
+
+                try (
+                        SelectionRoundDAO selectionRoundDAO = DBAccessFactory.getInstance()
+                                .getDAOFactory()
+                                .getSelectionRoundDAO()
+                ) {
+                    selectionRounds = selectionRoundDAO.getByIdList(
+                            new ArrayList<>(selectionRoundIdToFacultyMap.keySet())
+                    );
+                }
 
 
-            for (SelectionRound selectionRound: selectionRounds
-                 ) {
-                selectionRoundIdToFacultyMap.get(selectionRound.getId()).setSelectionRound(selectionRound);
+                for (SelectionRound selectionRound: selectionRounds
+                ) {
+                    selectionRoundIdToFacultyMap.get(selectionRound.getId()).setSelectionRound(selectionRound);
+                }
+
             }
 
             return new ArrayList<>(selectionRoundIdToFacultyMap.values());

@@ -1,15 +1,21 @@
-package university;
+package selectionCommittee;
 
+import jdk.jshell.spi.ExecutionControl;
+import json.JsonArray;
+import json.JsonComponent;
+import json.JsonSerializable;
+import json.JsonUtil;
 import rateFactors.RateFactorCoefficient;
 import rateFactors.RateFactorResult;
 import user.Enrollee;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
-public class SelectionRound {
+public class SelectionRound implements JsonSerializable {
 
     protected Long id;
 
@@ -138,5 +144,27 @@ public class SelectionRound {
 
     public void setSelectionPlan(int selectionPlan) {
         this.selectionPlan = selectionPlan;
+    }
+
+    @Override
+    public JsonComponent toJson() {
+        return JsonUtil.object(new HashMap<>() {
+            {
+                put("start_date", JsonUtil.string(startDate.toString()));
+                put("end_date", JsonUtil.string(endDate.toString()));
+
+                put("selection_plan", JsonUtil.number(selectionPlan));
+
+                JsonArray examCoefficients = JsonUtil.array();
+                for (RateFactorCoefficient coefficient: requiredExams) {
+                    examCoefficients.addValue(coefficient.toJson());
+                }
+
+                put("required_exams", examCoefficients);
+
+                put("school_certificate", schoolCertificate.toJson());
+
+            }
+        });
     }
 }

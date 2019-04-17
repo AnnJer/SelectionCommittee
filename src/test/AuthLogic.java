@@ -1,3 +1,7 @@
+import common.Router;
+import common.ServiceProvider;
+import dataAccess.Crypto;
+import dataAccess.DBAccessFactory;
 import json.*;
 import org.junit.Test;
 import user.Enrollee;
@@ -19,24 +23,39 @@ public class AuthLogic {
 
     @Test
     public void testUserLogin() {
-        JsonObject answer = new JsonObject();
+//        JsonObject answer = new JsonObject();
+//
+//        answer.addValue("name", new JsonStringValue("Bob \"carl\""));
+//        answer.addValue("age", new JsonNumber(12.5));
+//        answer.addValue("marks", new JsonArray(new ArrayList<>() {
+//            {
+//                add(new JsonNumber(2));
+//                add(new JsonNumber(3.5));
+//            }
+//        }));
+//
+//        answer.addValue("bbq", new JsonObject(new HashMap<>() {
+//            {
+//                put("source", new JsonStringValue("alt"));
+//            }
+//        }));
+//
+//        System.out.println(answer.encode());
 
-        answer.addValue("name", new JsonStringValue("Bob \"carl\""));
-        answer.addValue("age", new JsonNumber(12.5));
-        answer.addValue("marks", new JsonArray(new ArrayList<>() {
-            {
-                add(new JsonNumber(2));
-                add(new JsonNumber(3.5));
-            }
-        }));
+//        try {
+//            System.out.println(DBAccessFactory.getInstance().getDAOFactory().getApplicationDAO().getByUserId(1).getRating());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        answer.addValue("bbq", new JsonObject(new HashMap<>() {
-            {
-                put("source", new JsonStringValue("alt"));
-            }
-        }));
 
-        System.out.println(answer.encode());
+//        try {
+//            System.out.println(ServiceProvider.getInstance().getSelectionCommittee().getApplicationByUser(2));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        System.out.println(new String(Crypto.encodePassword("222".getBytes(), "222".getBytes())));
 
     }
 

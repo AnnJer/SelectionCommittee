@@ -130,6 +130,40 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
     }
 
 
+    public void deleteByEnrolleId(long id) throws Exception {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id_user = ?";
+        PreparedStatement st = conn.prepareStatement(sql);
+
+        st.setLong(1, id);
+
+        st.execute();
+    }
+
+    public void batchInsert(List<RateFactorResult> results, long userId) throws Exception {
+        StringBuilder sql = new StringBuilder("INSERT INTO " + TABLE_NAME + "(result, type, id_user) VALUES ");
+
+        for (int i = 0; i < results.size(); i++) {
+            sql.append("(?, ?, ?)");
+
+            if (i < results.size() - 1) {
+                sql.append(", ");
+            } else {
+                sql.append(";");
+            }
+        }
+
+        PreparedStatement st = conn.prepareStatement(sql.toString());
+
+        int i = 0;
+        for (RateFactorResult rateFactorResult: results) {
+            st.setFloat(++i, rateFactorResult.getResult());
+            st.setString(++i, rateFactorResult.getType().getType());
+            st.setLong(++i, userId);
+        }
+
+        st.executeUpdate();
+        st.close();
+    }
 
     private RateFactorResult parseFromResultSet(ResultSet rs) throws SQLException {
         float result = rs.getFloat("result");

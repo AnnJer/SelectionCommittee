@@ -9,5 +9,7 @@ public interface DAOFactory {
     EnrolleeDAO getEnrolleeDAO() throws Exception;
     SelectionRoundDAO getSelectionRoundDAO() throws Exception;
     SessionDAO getSessionDAO() throws Exception;
+    FacultyDAO getFacultyDAO() throws Exception;
+    ApplicationsDAO getApplicationDAO() throws Exception;
 
 }

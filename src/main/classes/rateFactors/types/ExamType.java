@@ -1,7 +1,7 @@
 package rateFactors.types;
 
 import rateFactors.RateFactorType;
-import university.Subject;
+import selectionCommittee.Subject;
 
 public class ExamType extends RateFactorType {
 

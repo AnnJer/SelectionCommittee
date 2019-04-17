@@ -1,9 +1,14 @@
-package university;
+package selectionCommittee;
 
 
+import json.JsonComponent;
+import json.JsonSerializable;
+import json.JsonUtil;
 import user.Enrollee;
 
-public class Faculty {
+import java.util.HashMap;
+
+public class Faculty implements JsonSerializable {
 
     protected Long id;
     protected String label;
@@ -61,5 +66,16 @@ public class Faculty {
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
+    }
+
+    @Override
+    public JsonComponent toJson() {
+        return JsonUtil.object(new HashMap<>() {
+            {
+                put("id", JsonUtil.number(id));
+                put("label", JsonUtil.string(label));
+                put("selectionRound", selectionRound.toJson());
+            }
+        });
     }
 }

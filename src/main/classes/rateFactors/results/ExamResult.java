@@ -3,7 +3,7 @@ package rateFactors.results;
 import rateFactors.RateFactorResult;
 import rateFactors.RateFactorType;
 import rateFactors.factories.RateFactorTypeFactory;
-import university.Subject;
+import selectionCommittee.Subject;
 
 
 public class ExamResult extends RateFactorResult {

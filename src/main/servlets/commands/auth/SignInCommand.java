@@ -2,7 +2,8 @@ package commands.auth;
 
 import auth.Auth;
 import auth.Session;
-import commands.Command;
+import commands.RestCommand;
+import common.ServiceProvider;
 import common.exceptions.GuardException;
 import dataAccess.Crypto;
 import json.JsonComponent;
@@ -10,16 +11,16 @@ import json.JsonComponent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class SignInCommand implements Command {
+public class SignInCommand extends RestCommand {
 
     private Auth auth;
 
-    public SignInCommand(Auth auth) {
-        this.auth = auth;
+    public SignInCommand() {
+        this.auth = ServiceProvider.getInstance().getAuth();
     }
 
     @Override
-    public JsonComponent execute(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
+    public JsonComponent doPost(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
 
         String login = req.getParameter("login");
         String password = req.getParameter("password");

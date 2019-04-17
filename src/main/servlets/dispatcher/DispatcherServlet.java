@@ -1,107 +1,129 @@
 package dispatcher;
 
-import auth.Auth;
 import commands.Command;
 import commands.auth.GetUserCommand;
 import commands.auth.SignInCommand;
+import commands.auth.SignOutCommand;
+import commands.university.*;
+import common.ResponseWriterUtil;
+import common.Router;
 import common.exceptions.GuardException;
 import json.JsonComponent;
-import json.JsonUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class DispatcherServlet extends HttpServlet {
 
-
-    private Map<String, Command> routes;
-    private Auth auth;
 
     @Override
     public void init() throws ServletException {
         super.init();
 
-        auth = new Auth();
-
-        routes = new HashMap<>();
+        Router router = Router.getInstance();
 
 
-        routes.put("/sign_in", new SignInCommand(auth));
-        routes.put("/sign_out", new SignInCommand(auth));
-        routes.put("/get_user", new GetUserCommand(auth));
+        router.add("/sign_in", new SignInCommand());
+        router.add("/sign_out", new SignOutCommand());
+        router.add("/sessions/{token}", new GetUserCommand());
+
+
+        router.add("/faculties", new FacultiesCommand());
+        router.add("/faculties/{id}", new ConcreteFacultyCommand());
+
+        router.add("/subjects", new SubjectCommand());
+
+        // ? byUserId , byFacultyId
+        router.add("/applications", new ApplicationsCommand());
+        router.add("/applications/{id}", new ConcreteFacultyCommand());
+
+
+        router.add("/rate_factors/results/{id}", new RateFactorResultsCommand());
 
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        req.setAttribute("requestType", RequestTypes.POST);
         processRequest(req, resp);
     }
 
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        req.setAttribute("requestType", RequestTypes.GET);
+        processRequest(req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("requestType", RequestTypes.DELETE);
         processRequest(req, resp);
     }
 
 
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("requestType", RequestTypes.PUT);
+        processRequest(req, resp);
+    }
 
-    private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("requestType", RequestTypes.OPTIONS);
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+    }
+
+    private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 
         resp.setContentType("application/json");
 
+        // TODO: declare config file with allowed domains for CORS
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+//        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
 
         String path = req.getPathInfo();
 
-        PrintWriter out = resp.getWriter();
-
-
         if (path == null) {
-            out.write(JsonUtil.object(new HashMap<>() {
-                {
-                    put("error", JsonUtil.string("Invalid path"));
-                }
-            }).encode());
+            ResponseWriterUtil.error(resp, "Not found", ResponseWriterUtil.NOT_FOUND);
+            return;
         }
 
 
-        JsonComponent answer = null;
+        JsonComponent answer;
 
-        for (String route: routes.keySet()) {
+        try {
+            Command command = Router.getInstance().route(path, req);
 
-            if (route.equals(path)) {
-                try {
-                    answer = routes.get(route).execute(req, resp);
-                } catch (GuardException e) {
-
-                    out.write(JsonUtil.object(new HashMap<>() {
-                        {
-                            put("error", e.toJson());
-                        }
-                    }).encode());
-
-                    return;
-                }
+            if (command == null) {
+                ResponseWriterUtil.error(resp, "Not found", ResponseWriterUtil.NOT_FOUND);
+                return;
             }
+
+            answer = command.execute(req, resp);
+
+        } catch (GuardException e) {
+            ResponseWriterUtil.error(
+                    resp, e.toJson(),
+                    (e.getErrorCode() != null) ?
+                            e.getErrorCode() : ResponseWriterUtil.UNPROCESSABLE_ENTITY
+            );
+            return;
         }
 
 
         if (answer == null) {
-            out.write(JsonUtil.object(new HashMap<>() {
-                {
-                    put("error", JsonUtil.string("Invalid path"));
-                }
-            }).encode());
+            ResponseWriterUtil.error(resp, "Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }
 
 
-
-        out.write(answer.encode());
+        ResponseWriterUtil.write(resp, answer, ResponseWriterUtil.OK);
     }
 }

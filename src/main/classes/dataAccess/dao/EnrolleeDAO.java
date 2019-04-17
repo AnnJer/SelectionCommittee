@@ -40,14 +40,22 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
             ResultSet rs = st.getResultSet();
 
-            rs.next();
+            if (!rs.next()) {
+                return null;
+            }
 
             Enrollee enrollee = parseFromResultSet(rs);
 
-            List<RateFactorResult> results = DBAccessFactory.getInstance()
-                                                            .getDAOFactory()
-                                                            .getRateFactorResultDAO()
-                                                            .getByEnrollee(enrollee);
+            List<RateFactorResult> results;
+
+            try (
+            RateFactorResultDAO rateFactorResultDAO = DBAccessFactory.getInstance()
+                    .getDAOFactory()
+                    .getRateFactorResultDAO()
+            ) {
+                results = rateFactorResultDAO.getByEnrollee(enrollee);
+            }
+
 
             enrollee.setSchoolCertificate(getAndRemoveFromListSchoolCertificateResult(results));
             enrollee.setExamResults(results);
@@ -208,7 +216,9 @@ public class EnrolleeDAO implements DAO<Enrollee>, Closeable {
 
         ResultSet rs = st.getResultSet();
 
-        rs.next();
+        if (!rs.next()) {
+            return null;
+        }
 
         enrollee.setId(rs.getLong("id"));
 

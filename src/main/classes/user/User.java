@@ -89,12 +89,14 @@ public abstract class User implements JsonSerializable {
 
     public abstract Session createSession();
 
+    public abstract UserRoles getRole();
 
 
     @Override
     public JsonObject toJson() {
         return JsonUtil.object(new HashMap<>() {
             {
+               put("id", JsonUtil.number(id));
                put("name", JsonUtil.string(name));
                put("surname", JsonUtil.string(surname));
                put("lastname", JsonUtil.string(lastname));

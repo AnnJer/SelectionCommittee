@@ -3,7 +3,7 @@ package rateFactors.coefficients;
 import rateFactors.RateFactorCoefficient;
 import rateFactors.RateFactorType;
 import rateFactors.factories.RateFactorTypeFactory;
-import university.Subject;
+import selectionCommittee.Subject;
 
 public class ExamCoefficient extends RateFactorCoefficient {
 

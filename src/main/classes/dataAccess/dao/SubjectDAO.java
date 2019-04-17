@@ -1,6 +1,6 @@
 package dataAccess.dao;
 
-import university.Subject;
+import selectionCommittee.Subject;
 
 import java.io.Closeable;
 import java.io.IOException;

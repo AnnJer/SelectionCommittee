@@ -56,6 +56,11 @@ public class Enrollee extends User{
     }
 
     @Override
+    public UserRoles getRole() {
+        return UserRoles.ENROLLEE;
+    }
+
+    @Override
     public JsonObject toJson() {
         JsonObject json = super.toJson();
 

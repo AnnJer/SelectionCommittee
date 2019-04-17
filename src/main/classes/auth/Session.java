@@ -1,6 +1,7 @@
 package auth;
 
 import dataAccess.DBAccessFactory;
+import dataAccess.dao.EnrolleeDAO;
 import json.JsonObject;
 import json.JsonSerializable;
 import json.JsonUtil;
@@ -28,11 +29,13 @@ public abstract class Session implements JsonSerializable {
 
     public static Session createSession(Long userId, String token, String type) {
 
-        try {
+        try (
+                EnrolleeDAO enrolleeDAO = DBAccessFactory.getInstance().getDAOFactory().getEnrolleeDAO()
+                ) {
             if (type.equals(EnrolleeSession.SESSION_TYPE)) {
 
                 return new EnrolleeSession(
-                        DBAccessFactory.getInstance().getDAOFactory().getEnrolleeDAO().get(userId),
+                        enrolleeDAO.get(userId),
                         token
                 );
             } else if(type.equals(AdministratorSession.SESSION_TYPE)) {

@@ -7,14 +7,14 @@
 
 
   <servlet>
-    <servlet-name>auth</servlet-name>
+    <servlet-name>dispatcher</servlet-name>
     <servlet-class>dispatcher.DispatcherServlet</servlet-class>
   </servlet>
 
 
   <servlet-mapping>
-    <servlet-name>auth</servlet-name>
-    <url-pattern>/auth/*</url-pattern>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
 

@@ -2,8 +2,8 @@ package dataAccess.dao;
 
 import rateFactors.RateFactorCoefficient;
 import rateFactors.factories.RateFactorsFactory;
-import university.SelectionRound;
-import university.factories.SelectionRoundFactory;
+import selectionCommittee.SelectionRound;
+import selectionCommittee.factories.SelectionRoundFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -39,9 +39,6 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
                     "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
                     "ON s.id = c.id_selection_round " +
                     "WHERE s.id = ?;";
-
-//            SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM selection_rounds AS s LEFT JOIN rate_factor_coefficients AS c ON s.id = c.id_selection_round;
-
 
 
             PreparedStatement st = conn.prepareStatement(sql);
@@ -95,15 +92,18 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
         try {
             String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
                 "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
-                "ON s.id = c.id_selection_round WHERE id IN (?);";
+                "ON s.id = c.id_selection_round WHERE s.id IN (";
 
-            PreparedStatement st = conn.prepareStatement(sql);
-
-            st.setString(1, ids.stream()
+            sql += ids.stream()
                                         .map(String::valueOf)
-                                        .collect(Collectors.joining(", ")));
+                                        .collect(Collectors.joining(", "));
 
-            st.execute();
+            sql += ");";
+
+
+            Statement st = conn.createStatement();
+
+            st.execute(sql);
 
             ResultSet rs = st.getResultSet();
 
@@ -166,7 +166,7 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
             throw new NullPointerException("ID was not defined.");
         }
 
-        Utils.deleteCasadeById(selectionRound.getId(), TABLE_NAME, conn);
+        Utils.deleteCascadeById(selectionRound.getId(), TABLE_NAME, conn);
 
 
     }

@@ -1,5 +1,6 @@
-package university;
+package selectionCommittee;
 
+import common.ServiceProvider;
 import user.Enrollee;
 
 import java.util.ArrayList;
@@ -24,20 +25,16 @@ public class ApplicationManager {
 
 
 
-    public boolean isValidApplication(Application aapplication) {
+    public boolean isValidApplication(Application application) throws Exception {
+
+        Application existAppl = ServiceProvider.getInstance()
+                .getSelectionCommittee().getApplicationByUser(application.getUser().getId());
+
+        if (existAppl != null) {
+            return false;
+        }
 
         return true;
     }
-
-
-    List<Application> getApplicationsByEnrollee(Enrollee enrollee) {
-        return new ArrayList<>();
-    }
-
-
-    List<Application> getApplicationsByFaculty(Faculty faculty) {
-        return new ArrayList<>();
-    }
-
 
 }

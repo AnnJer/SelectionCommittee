@@ -21,4 +21,10 @@ public class Administrator extends User{
     public JsonObject toJson() {
         return super.toJson();
     }
+
+
+    @Override
+    public UserRoles getRole() {
+        return UserRoles.ADMINISTRATOR;
+    }
 }

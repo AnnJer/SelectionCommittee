@@ -6,7 +6,7 @@ import rateFactors.coefficients.ExamCoefficient;
 import rateFactors.coefficients.SchoolCertificateCoefficient;
 import rateFactors.results.ExamResult;
 import rateFactors.results.SchoolCertificateResult;
-import university.*;
+import selectionCommittee.*;
 import user.Enrollee;
 
 import java.util.ArrayList;

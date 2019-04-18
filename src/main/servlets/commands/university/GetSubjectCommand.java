@@ -1,38 +1,35 @@
 package commands.university;
 
 import commands.Command;
-import commands.RestCommand;
 import common.ResponseWriterUtil;
 import common.ServiceProvider;
 import common.exceptions.GuardException;
 import json.JsonArray;
 import json.JsonComponent;
 import json.JsonUtil;
-import selectionCommittee.Faculty;
+import selectionCommittee.Subject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-public class FacultiesCommand extends RestCommand {
+public class GetSubjectCommand implements Command {
 
     @Override
-    public JsonComponent doGet(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
-
+    public JsonComponent execute(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
         try {
-            List<Faculty> faculties = ServiceProvider.getInstance().getSelectionCommittee().getAllFaculties();
+            List<Subject> subjects = ServiceProvider.getInstance().getSelectionCommittee().getAllSubjects();
 
-            JsonArray facultiesArr = JsonUtil.array();
+            JsonArray subjectsArr = JsonUtil.array();
 
-            for (Faculty faculty: faculties) {
-                facultiesArr.addValue(faculty.toJson());
+            for (Subject subject: subjects) {
+                subjectsArr.addValue(subject.toJson());
             }
 
-            return facultiesArr;
+            return subjectsArr;
 
         } catch (Exception e) {
             throw new GuardException("Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }
     }
-
 }

@@ -27,22 +27,25 @@ public class DispatcherServlet extends HttpServlet {
         Router router = Router.getInstance();
 
 
-        router.add("/sign_in", new SignInCommand());
-        router.add("/sign_out", new SignOutCommand());
-        router.add("/sessions/{token}", new GetUserCommand());
+        router.add(RequestTypes.POST, "/sign_in", new SignInCommand());
+        router.add(RequestTypes.GET,"/sign_out", new SignOutCommand());
+
+        router.add(RequestTypes.GET, "/sessions/{token}", new GetUserCommand());
 
 
-        router.add("/faculties", new FacultiesCommand());
-        router.add("/faculties/{id}", new ConcreteFacultyCommand());
+        router.add(RequestTypes.GET,"/faculties", new GetFacultiesCommand());
+        router.add(RequestTypes.GET,"/faculties/{id}", new GetConcreteFacultyCommand());
 
-        router.add("/subjects", new SubjectCommand());
+        router.add(RequestTypes.GET,"/subjects", new GetSubjectCommand());
 
         // ? byUserId , byFacultyId
-        router.add("/applications", new ApplicationsCommand());
-        router.add("/applications/{id}", new ConcreteFacultyCommand());
+        router.add(RequestTypes.GET,"/applications", new GetApplicationsCommand());
+        router.add(RequestTypes.POST,"/applications", new PostApplicationsCommand());
 
+        router.add(RequestTypes.GET,"/applications/{id}", new GetConcreteApplicationCommand());
+        router.add(RequestTypes.DELETE,"/applications/{id}", new DeleteConcreteFacultyCommand());
 
-        router.add("/rate_factors/results/{id}", new RateFactorResultsCommand());
+        router.add(RequestTypes.POST, "/rate_factors/results/{id}", new PostRateFactorResultsCommand());
 
     }
 

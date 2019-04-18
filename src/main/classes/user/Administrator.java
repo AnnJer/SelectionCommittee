@@ -4,8 +4,10 @@ import json.JsonObject;
 import auth.AdministratorSession;
 import auth.Session;
 import dataAccess.Crypto;
+import json.JsonSerializable;
+import json.JsonUtil;
 
-public class Administrator extends User{
+public class Administrator extends User {
 
 
     public Administrator(long id, String name, String lastname, String surname, String login) {
@@ -19,7 +21,11 @@ public class Administrator extends User{
 
     @Override
     public JsonObject toJson() {
-        return super.toJson();
+        JsonObject json = super.toJson();
+
+        json.addValue("userType", JsonUtil.string(getRole().toString()));
+
+        return json;
     }
 
 
@@ -27,4 +33,7 @@ public class Administrator extends User{
     public UserRoles getRole() {
         return UserRoles.ADMINISTRATOR;
     }
+
+
+
 }

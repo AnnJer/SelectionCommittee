@@ -1,5 +1,6 @@
 package commands.university;
 
+import commands.Command;
 import commands.RestCommand;
 import common.ServiceProvider;
 import common.exceptions.GuardException;
@@ -14,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApplicationsCommand extends RestCommand {
+public class GetApplicationsCommand implements Command {
 
     @Override
-    protected JsonComponent doGet(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
+    public JsonComponent execute(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
         SelectionCommittee selectionCommittee = ServiceProvider.getInstance().getSelectionCommittee();
 
         String userId = req.getParameter("byUserId");
@@ -43,7 +44,7 @@ public class ApplicationsCommand extends RestCommand {
                 return answer;
             }
 
-            for (Application application: applications) {
+            for (Application application : applications) {
                 if (application == null) {
                     continue;
                 }
@@ -52,38 +53,11 @@ public class ApplicationsCommand extends RestCommand {
 
             return answer;
 
-        }  catch (GuardException e) {
-            throw e;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new GuardException("Something went wrong");
-        }
-    }
-
-
-    @Override
-    protected JsonComponent doPost(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
-        SelectionCommittee selectionCommittee = ServiceProvider.getInstance().getSelectionCommittee();
-
-        String token = req.getParameter("token");
-        String facultyId = req.getParameter("facultyId");
-
-        if (token == null) {
-            throw new GuardException("Token missed");
-        }
-
-        if (facultyId == null) {
-            throw new GuardException("Faculty id missed");
-        }
-
-        try {
-            return selectionCommittee.createApplication(token, Long.valueOf(facultyId));
         } catch (GuardException e) {
             throw e;
         } catch (Exception e) {
             e.printStackTrace();
             throw new GuardException("Something went wrong");
         }
-
     }
 }

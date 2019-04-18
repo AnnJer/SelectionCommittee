@@ -8,14 +8,9 @@ import dataAccess.Crypto;
 import rateFactors.RateFactorResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Enrollee extends User{
-
-
-    static final String USER_TYPE = "enrollee";
-
 
     protected List<RateFactorResult> examResults;
     protected RateFactorResult schoolCertificate;
@@ -77,7 +72,7 @@ public class Enrollee extends User{
             }
         }));
 
-        json.addValue("userType", JsonUtil.string(USER_TYPE));
+        json.addValue("userType", JsonUtil.string(getRole().toString()));
 
         return json;
     }

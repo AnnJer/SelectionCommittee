@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RateFactorResultsCommand extends RestCommand {
+public class PostRateFactorResultsCommand extends RestCommand {
 
     @Override
     protected JsonComponent doPost(HttpServletRequest req, HttpServletResponse resp) throws GuardException {

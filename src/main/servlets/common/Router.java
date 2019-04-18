@@ -1,6 +1,7 @@
 package common;
 
 import commands.Command;
+import dispatcher.RequestTypes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -21,12 +22,17 @@ public class Router {
     }
 
 
-    public void add(String urlPattern, Command command) {
-        routes.put(urlPattern, command);
+    public void add(RequestTypes type, String urlPattern, Command command) {
+        routes.put(type.toString() + ":" + urlPattern, command);
     }
 
 
+    /*
+        Warning: splits patterns by ":", that placed between request method and url pattern
+     */
     public Command route(String url, HttpServletRequest req) {
+
+        RequestTypes requestType = (RequestTypes)req.getAttribute("requestType");
 
         Command command = null;
 
@@ -34,7 +40,13 @@ public class Router {
 
         for (String pattern: routes.keySet()) {
 
-            String[] patternParts = pattern.substring(1).split("/");
+            String[] methodAndPattern = pattern.split(":");
+
+            if (!methodAndPattern[0].equals(requestType.toString())) {
+                continue;
+            }
+
+            String[] patternParts = methodAndPattern[1].substring(1).split("/");
 
             if (compareUrlParts(urlParts, patternParts)) {
                 parseUrpParameters(urlParts, patternParts, req);

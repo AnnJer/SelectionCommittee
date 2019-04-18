@@ -5,6 +5,7 @@ import dataAccess.dao.UserDAO;
 import json.JsonObject;
 import json.JsonSerializable;
 import json.JsonUtil;
+import user.Administrator;
 import user.Enrollee;
 import user.User;
 
@@ -42,7 +43,7 @@ public abstract class Session implements JsonSerializable {
             } else if(type.equals(AdministratorSession.SESSION_TYPE)) {
                 // TODO: implement Admin session
                 return new AdministratorSession(
-                        null,
+                        (Administrator) userDAO.get(userId),
                         token
                 );
             }

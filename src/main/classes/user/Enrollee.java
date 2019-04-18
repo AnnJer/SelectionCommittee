@@ -60,7 +60,7 @@ public class Enrollee extends User{
 
         JsonObject json = super.toJson();
 
-        json.addValue("rateFactors", JsonUtil.array(new ArrayList<>() {
+        json.addValue("rate_factors", JsonUtil.array(new ArrayList<>() {
             {
                 for (RateFactorResult result: getRateFactors()
                      ) {
@@ -72,7 +72,7 @@ public class Enrollee extends User{
             }
         }));
 
-        json.addValue("userType", JsonUtil.string(getRole().toString()));
+        json.addValue("user_type", JsonUtil.string(getRole().toString()));
 
         return json;
     }

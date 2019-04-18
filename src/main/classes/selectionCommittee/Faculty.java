@@ -75,7 +75,7 @@ public class Faculty implements JsonSerializable {
             {
                 put("id", JsonUtil.number(id));
                 put("label", JsonUtil.string(label));
-                put("selectionRound", selectionRound.toJson());
+                put("selection_round", selectionRound.toJson());
             }
         });
     }

@@ -23,7 +23,7 @@ public class Administrator extends User {
     public JsonObject toJson() {
         JsonObject json = super.toJson();
 
-        json.addValue("userType", JsonUtil.string(getRole().toString()));
+        json.addValue("user_type", JsonUtil.string(getRole().toString()));
 
         return json;
     }

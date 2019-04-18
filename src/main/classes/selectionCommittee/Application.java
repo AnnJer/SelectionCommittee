@@ -77,7 +77,7 @@ public class Application implements JsonSerializable {
             {
                 put("id", JsonUtil.number(id));
                 put("rating", JsonUtil.number(rating));
-                put("cDate", JsonUtil.string(cDate.toString()));
+                put("c_date", JsonUtil.string(cDate.toString()));
                 put("faculty", JsonUtil.object(new HashMap<>() {
                     {
                         put("label", JsonUtil.string(faculty.getLabel()));

@@ -26,71 +26,45 @@ public class UserDAO implements DAO<User>, Closeable {
     }
 
     @Override
-    public User get(long id) {
+    public User get(long id) throws SQLException {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
+                "LEFT JOIN " + RATE_FACTORS_TABLE_NAME + " AS r " +
+                "ON u.id = r.id_user " +
+                "WHERE u.id = ?;";
 
-        try {
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                );
 
-            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
-                    "LEFT JOIN " + RATE_FACTORS_TABLE_NAME + " AS r " +
-                    "ON u.id = r.id_user " +
-                    "WHERE u.id = ?;";
-
-            st = conn.prepareStatement(sql);
-
-            st.setLong(1, id);
-            st.execute();
-
-
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ) {
 
             List<User> users = getUsersListWithResultFactors(rs);
 
             return users.size() > 0 ? users.get(0) : null;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
 
-    public User getByLoginAndPassword(String login, String password) {
+    public User getByLoginAndPassword(String login, String password) throws SQLException {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
+                "LEFT JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = u.id " +
+                "WHERE u.login = ? AND u.password = ?;";
 
-        try {
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setString(1, login);
+                            st1.setString(2, password);
+                        }
+                );
 
-            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
-                    "LEFT JOIN " + RateFactorResultDAO.TABLE_NAME + " AS r ON r.id_user = u.id " +
-                    "WHERE u.login = ? AND u.password = ?;";
-
-
-            st = conn.prepareStatement(sql);
-
-            st.setString(1, login);
-            st.setString(2, password);
-
-            st.execute();
-
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ) {
 
             List<User> users = getUsersListWithResultFactors(rs);
 
@@ -100,23 +74,6 @@ public class UserDAO implements DAO<User>, Closeable {
 
             return users.get(0);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -139,42 +96,18 @@ public class UserDAO implements DAO<User>, Closeable {
 
 
     @Override
-    public List<User> getAll() {
+    public List<User> getAll() throws SQLException {
 
-        Statement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
+                "LEFT JOIN " + RATE_FACTORS_TABLE_NAME + " AS r ON r.id_user = u.id;";
 
-        try {
-
-            String sql = "SELECT u.*, r.id AS r_id, r.result, r.type FROM " + TABLE_NAME + " AS u " +
-                         "LEFT JOIN " + RATE_FACTORS_TABLE_NAME + " AS r ON r.id_user = u.id;";
-
-
-            st = conn.createStatement();
-
-            st.execute(sql);
-
-            rs = st.getResultSet();
+        try (
+               Statement st = conn.createStatement();
+               ResultSet rs = st.executeQuery(sql)
+                ) {
 
             return getUsersListWithResultFactors(rs);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -244,66 +177,63 @@ public class UserDAO implements DAO<User>, Closeable {
         String sql = "INSERT INTO " + TABLE_NAME +
                 " (name, surname, lastname, login, password, role) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;";
 
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setString(1, user.getName());
+                            st1.setString(2, user.getSurname());
+                            st1.setString(3, user.getLastname());
+                            st1.setString(4, user.getLogin());
+                            st1.setBytes(5, user.getPassword());
+                            st1.setString(5, user.getRole().toString());
+                        }
+                );
 
-        PreparedStatement st = conn.prepareStatement(sql);
+                ResultSet rs = st.executeQuery()
+                ) {
 
-        st.setString(1, user.getName());
-        st.setString(2, user.getSurname());
-        st.setString(3, user.getLastname());
-        st.setString(4, user.getLogin());
-        st.setBytes(5, user.getPassword());
-        st.setString(5, user.getRole().toString());
+            if (!rs.next()) {
+                return null;
+            }
 
-        st.execute();
+            user.setId(rs.getLong("id"));
 
-        ResultSet rs = st.getResultSet();
-
-        if (!rs.next()) {
-            return null;
+            return user;
         }
-
-        user.setId(rs.getLong("id"));
-
-        rs.close();
-        st.close();
-
-        return user;
     }
 
     @Override
-    public void update(User enrollee) throws Exception {
+    public void update(User user) throws Exception {
 
 
-        if (enrollee.getId() == null) {
+        if (user.getId() == null) {
             throw new NullPointerException("ID was not defined.");
         }
 
         String sql = "UPDATE " + TABLE_NAME + " SET name = ?, surname = ?, lastname = ? WHERE id = ?;";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setString(1, enrollee.getName());
-        st.setString(2, enrollee.getSurname());
-        st.setString(3, enrollee.getLastname());
-        st.setLong(4, enrollee.getId());
-
-        st.executeUpdate();
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setString(1, user.getName());
+                            st1.setString(2, user.getSurname());
+                            st1.setString(3, user.getLastname());
+                            st1.setLong(4, user.getId());
+                        }
+                );
+        ) {
+            st.executeUpdate();
+        }
     }
 
     @Override
-    public void delete(User enrollee) throws Exception {
+    public void delete(User user) throws Exception {
 
-        if (enrollee.getId() == null) {
+        if (user.getId() == null) {
             throw new NullPointerException("ID was not defined.");
         }
 
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?;";
-        PreparedStatement st = conn.prepareStatement(sql);
-
-        st.setLong(1, enrollee.getId());
-
-        st.executeUpdate();
-
-        st.close();
+        Utils.deleteById(user.getId(), TABLE_NAME, conn);
     }
 
     private User parseFromResultSet(ResultSet rs) throws SQLException {

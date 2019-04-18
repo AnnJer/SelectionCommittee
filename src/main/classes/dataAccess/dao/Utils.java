@@ -2,8 +2,17 @@ package dataAccess.dao;
 
 import java.sql.*;
 
-public class Utils {
+class Utils {
 
+
+    static PreparedStatement getPreparedStatement(Connection conn, String sql, StatementCompiler compiler) throws SQLException {
+
+        PreparedStatement st = conn.prepareStatement(sql);
+
+        compiler.prepare(st);
+
+        return st;
+    }
 
     static ResultSet getById(long id, String table, Connection conn) throws SQLException {
         String sql = "SELECT * FROM " + table + " WHERE id = ?;";
@@ -14,17 +23,6 @@ public class Utils {
         st.execute();
 //        st.close();
         ResultSet rs = st.getResultSet();
-
-        return rs;
-    }
-
-    static ResultSet getAll(String table, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM " + table + ";";
-        Statement st = conn.createStatement();
-
-        st.execute(sql);
-        ResultSet rs = st.getResultSet();
-//        st.close();
 
         return rs;
     }

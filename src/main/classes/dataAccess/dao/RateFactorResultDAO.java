@@ -28,24 +28,22 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
     public List<RateFactorResult> getByEnrollee(Enrollee enrollee) throws SQLException {
 
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id_user = ?;";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setLong(1, enrollee.getId());
-        st.execute();
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, enrollee.getId())
+                );
 
-        ResultSet rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ){
+            List<RateFactorResult> rateFactorResults = new ArrayList<>();
 
+            while(rs.next()) {
+                rateFactorResults.add(parseFromResultSet(rs));
+            }
 
-        List<RateFactorResult> rateFactorResults = new ArrayList<>();
-
-        while(rs.next()) {
-            rateFactorResults.add(parseFromResultSet(rs));
+            return rateFactorResults;
         }
-
-        rs.close();
-        st.close();
-
-        return rateFactorResults;
 
     }
 
@@ -53,18 +51,15 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
     @Override
     public RateFactorResult get(long id) {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
 
-        try {
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                );
 
-            String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
-            st = conn.prepareStatement(sql);
-
-            st.setLong(1, id);
-
-            st.execute();
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ){
 
             rs.next();
             return parseFromResultSet(rs);
@@ -72,36 +67,18 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
-    public List<RateFactorResult> getAll() {
+    public List<RateFactorResult> getAll() throws SQLException {
 
-        ResultSet rs = null;
-        Statement st = null;
+        String sql = "SELECT * FROM " + TABLE_NAME + ";";
 
-        try {
-
-            String sql = "SELECT * FROM " + TABLE_NAME + ";";
-            st = conn.createStatement();
-
-            st.execute(sql);
-            rs = st.getResultSet();
+        try (
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)
+                ){
 
             List<RateFactorResult> rateFactorResults = new ArrayList<>();
 
@@ -111,23 +88,6 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
 
             return rateFactorResults;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -135,22 +95,23 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
     public RateFactorResult save(RateFactorResult rateFactorResult) throws Exception {
 
         String sql = "INSERT INTO " + TABLE_NAME + " (id, result, type) VALUES (default, ?, ?) RETURNING id;";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setFloat(1, rateFactorResult.getResult());
-        st.setString(2, rateFactorResult.getType().getType());
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setFloat(1, rateFactorResult.getResult());
+                            st1.setString(2, rateFactorResult.getType().getType());
+                        }
+                );
 
-        st.execute();
+                ResultSet rs = st.executeQuery()
+                ) {
+            rs.next();
+            rateFactorResult.setId(rs.getLong("id"));
 
-        ResultSet rs = st.getResultSet();
+            return rateFactorResult;
+        }
 
-        rs.next();
-        rateFactorResult.setId(rs.getLong("id"));
-
-        rs.close();
-        st.close();
-
-        return rateFactorResult;
     }
 
     @Override
@@ -161,18 +122,22 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         }
 
         String sql = "UPDATE " + TABLE_NAME + " SET result = ? WHERE id = ?;";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setFloat(1, rateFactorResult.getResult());
-        st.setLong(2, rateFactorResult.getId());
-
-        st.executeUpdate();
-
-        st.close();
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setFloat(1, rateFactorResult.getResult());
+                            st1.setLong(2, rateFactorResult.getId());
+                        }
+                )
+                ) {
+            st.executeUpdate();
+        }
     }
 
     @Override
     public void delete(RateFactorResult rateFactorResult) throws Exception {
+
         if (rateFactorResult.getId() == null) {
             throw new NullPointerException("ID was not defined.");
         }
@@ -183,16 +148,18 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
 
     public void deleteByEnrolleId(long id) throws Exception {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE id_user = ?";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setLong(1, id);
-
-        st.execute();
-
-        st.close();
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                )
+                ) {
+            st.executeUpdate();
+        }
     }
 
     public void batchInsert(List<RateFactorResult> results, long userId) throws Exception {
+
         StringBuilder sql = new StringBuilder("INSERT INTO " + TABLE_NAME + "(result, type, id_user) VALUES ");
 
         for (int i = 0; i < results.size(); i++) {
@@ -205,17 +172,20 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
             }
         }
 
-        PreparedStatement st = conn.prepareStatement(sql.toString());
-
-        int i = 0;
-        for (RateFactorResult rateFactorResult: results) {
-            st.setFloat(++i, rateFactorResult.getResult());
-            st.setString(++i, rateFactorResult.getType().getType());
-            st.setLong(++i, userId);
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql.toString(), (PreparedStatement st1) -> {
+                            int i = 0;
+                            for (RateFactorResult rateFactorResult: results) {
+                                st1.setFloat(++i, rateFactorResult.getResult());
+                                st1.setString(++i, rateFactorResult.getType().getType());
+                                st1.setLong(++i, userId);
+                            }
+                        }
+                )
+                ) {
+            st.executeUpdate();
         }
-
-        st.executeUpdate();
-        st.close();
     }
 
     private RateFactorResult parseFromResultSet(ResultSet rs) throws SQLException {

@@ -29,21 +29,18 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
     }
 
     @Override
-    public Faculty get(long id) {
+    public Faculty get(long id) throws Exception {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
 
-        try {
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                );
 
-            String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
-            st = conn.prepareStatement(sql);
+                ResultSet rs = st.executeQuery()
+                ){
 
-            st.setLong(1, id);
-
-            st.execute();
-
-            rs = st.getResultSet();
 
             if (!rs.next()) {
                 return null;
@@ -63,41 +60,20 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
 
             return faculty;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
-    public List<Faculty> getAll() {
+    public List<Faculty> getAll() throws Exception {
 
-        Statement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM " + TABLE_NAME + ";";
 
         Map<Long, Faculty> selectionRoundIdToFacultyMap = new HashMap<>();
 
-        try {
-
-            String sql = "SELECT * FROM " + TABLE_NAME + ";";
-            st = conn.createStatement();
-
-            st.execute(sql);
-            rs = st.getResultSet();
+        try (
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)
+                ){
 
             while(rs.next()) {
                 long idSelectionRound = rs.getLong("id_selection_round");
@@ -131,23 +107,6 @@ public class FacultyDAO implements DAO<Faculty>, Closeable {
 
             return new ArrayList<>(selectionRoundIdToFacultyMap.values());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 

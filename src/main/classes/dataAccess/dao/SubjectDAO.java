@@ -20,59 +20,33 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
     }
 
     @Override
-    public Subject get(long id) {
+    public Subject get(long id) throws SQLException {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
 
-        try {
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                );
 
-            String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?;";
-            st = conn.prepareStatement(sql);
-
-            st.setLong(1, id);
-
-            st.execute();
-
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ) {
 
             rs.next();
             return parseFromResultSet(rs);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
-    public List<Subject> getAll() {
+    public List<Subject> getAll() throws SQLException {
 
-        Statement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM " + TABLE_NAME + ";";
 
-
-        try {
-
-            String sql = "SELECT * FROM " + TABLE_NAME + ";";
-            st = conn.createStatement();
-
-            st.execute(sql);
-            rs = st.getResultSet();
+        try (
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)
+                ) {
 
             List<Subject> subjects = new ArrayList<>();
 
@@ -82,45 +56,28 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
 
             return subjects;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
     public Subject save(Subject subject) throws SQLException {
+
         String sql = "INSERT INTO " + TABLE_NAME + " (id, label) VALUES (default, ?) RETURNING id;";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setString(1, subject.getLabel());
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setString(1, subject.getLabel())
+                );
 
-        st.execute();
+                ResultSet rs = st.executeQuery()
+                ) {
 
-        ResultSet rs = st.getResultSet();
+            rs.next();
 
-        rs.next();
+            subject.setId(rs.getLong("id"));
 
-        subject.setId(rs.getLong("id"));
-
-        rs.close();
-        st.close();
-
-        return subject;
+            return subject;
+        }
     }
 
     @Override
@@ -131,14 +88,17 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
         }
 
         String sql = "UPDATE " + TABLE_NAME + " SET label = ? WHERE id = ?;";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setString(1, subject.getLabel());
-        st.setLong(2, subject.getId());
-
-        st.executeUpdate();
-
-        st.close();
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setString(1, subject.getLabel());
+                            st1.setLong(2, subject.getId());
+                        }
+                )
+                ) {
+            st.executeUpdate();
+        }
     }
 
     @Override

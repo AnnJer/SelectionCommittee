@@ -34,24 +34,18 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
     @Override
     public SelectionRound get(long id) {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
+                "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
+                "ON s.id = c.id_selection_round " +
+                "WHERE s.id = ?;";
 
-        try {
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                );
 
-            String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
-                    "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
-                    "ON s.id = c.id_selection_round " +
-                    "WHERE s.id = ?;";
-
-
-            st = conn.prepareStatement(sql);
-
-            st.setLong(1, id);
-            st.execute();
-
-
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ) {
 
             List<SelectionRound> selectionRounds = getSelectionRoundsWithResultFactors(rs);
 
@@ -64,90 +58,48 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
 
 
     @Override
-    public List<SelectionRound> getAll() {
+    public List<SelectionRound> getAll() throws SQLException {
 
-        Statement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
+                "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
+                "ON s.id = c.id_selection_round;";
 
-        try {
-
-            String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
-                    "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
-                    "ON s.id = c.id_selection_round;";
-
-            st = conn.createStatement();
-            st.execute(sql);
-
-            rs = st.getResultSet();
+        try (
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)
+                ) {
 
             return getSelectionRoundsWithResultFactors(rs);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
 
-    public List<SelectionRound> getByIdList (List<Long> ids) {
+    public List<SelectionRound> getByIdList (List<Long> ids) throws SQLException {
 
-        try {
-            String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
+        String sql = "SELECT s.*, c.id AS c_id, c.coefficient, c.type FROM " + TABLE_NAME + " AS s " +
                 "LEFT JOIN " + COEFFICIENTS_TABLE_NAME + " AS c " +
                 "ON s.id = c.id_selection_round WHERE s.id IN (";
 
-            sql += ids.stream()
-                                        .map(String::valueOf)
-                                        .collect(Collectors.joining(", "));
+        sql += ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
 
-            sql += ");";
+        sql += ");";
 
-
-            Statement st = conn.createStatement();
-
-            st.execute(sql);
-
-            ResultSet rs = st.getResultSet();
+        try (
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)
+                ) {
 
             return getSelectionRoundsWithResultFactors(rs);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
@@ -159,24 +111,24 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
                      + TABLE_NAME
                      + " (id, selection_plan, start_date, end_date) VALUES (default, ?, ?, ?) RETURNING id;";
 
-        PreparedStatement st = conn.prepareStatement(sql);
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setInt(1, selectionRound.getSelectionPlan());
+                            st1.setDate(2, (java.sql.Date)selectionRound.getStartDate());
+                            st1.setDate(3, (java.sql.Date)selectionRound.getEndDate());
+                        }
+                );
 
-        st.setInt(1, selectionRound.getSelectionPlan());
-        st.setDate(2, (java.sql.Date)selectionRound.getStartDate());
-        st.setDate(3, (java.sql.Date)selectionRound.getEndDate());
+                ResultSet rs = st.executeQuery()
+                ) {
 
-        st.execute();
+            rs.next();
 
-        ResultSet rs = st.getResultSet();
+            selectionRound.setId(rs.getLong("id"));
 
-        rs.next();
-
-        selectionRound.setId(rs.getLong("id"));
-
-        rs.close();
-        st.close();
-
-        return selectionRound;
+            return selectionRound;
+        }
     }
 
     @Override
@@ -186,19 +138,21 @@ public class SelectionRoundDAO implements DAO<SelectionRound>, Closeable {
             throw new NullPointerException("ID was not defined.");
         }
 
-
         String sql = "UPDATE " + TABLE_NAME + " SET selection_plan = ?, start_date = ?, end_date = ?  WHERE id = ?;";
-        PreparedStatement st = conn.prepareStatement(sql);
 
-        st.setInt(1, selectionRound.getSelectionPlan());
-        st.setDate(2, (java.sql.Date)selectionRound.getStartDate());
-        st.setDate(3, (java.sql.Date)selectionRound.getEndDate());
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setInt(1, selectionRound.getSelectionPlan());
+                            st1.setDate(2, (java.sql.Date)selectionRound.getStartDate());
+                            st1.setDate(3, (java.sql.Date)selectionRound.getEndDate());
+                            st1.setLong(4, selectionRound.getId());
+                        }
+                )
+                ) {
+            st.executeUpdate();
+        }
 
-        st.setLong(4, selectionRound.getId());
-
-        st.executeUpdate();
-
-        st.close();
     }
 
     @Override

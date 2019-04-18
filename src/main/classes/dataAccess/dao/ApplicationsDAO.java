@@ -4,7 +4,6 @@ import jdk.jshell.spi.ExecutionControl;
 import selectionCommittee.Application;
 import selectionCommittee.Faculty;
 import selectionCommittee.SelectionRound;
-import selectionCommittee.factories.SelectionRoundFactory;
 import user.Enrollee;
 import user.User;
 
@@ -33,22 +32,20 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
     @Override
     public Application get(long id) {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
 
-        try {
+        String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname," +
+                " f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+                "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
+                "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
+                "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE a.id = ?;";
 
-            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
-                         "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
-                         "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
-                         "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE a.id = ?;";
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                        );
 
-            st = conn.prepareStatement(sql);
-
-            st.setLong(1, id);
-
-            st.execute();
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ){
 
             if (!rs.next()) {
                 return null;
@@ -59,43 +56,25 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-
     }
 
 
-    public Application getByUserId(long id) {
+    public Application getByUserId(long id) throws SQLException {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+                "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
+                "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
+                "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE u.id = ?;";
 
-        try {
 
-            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
-                    "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
-                    "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
-                    "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE u.id = ?;";
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                );
 
-            st = conn.prepareStatement(sql);
-
-            st.setLong(1, id);
-
-            st.execute();
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ) {
 
             if (!rs.next()) {
                 return null;
@@ -103,46 +82,24 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
             return parseFromResultSet(rs);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
     }
 
-    public List<Application> getByFacultyId(long id) {
+    public List<Application> getByFacultyId(long id) throws SQLException {
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+                "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
+                "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
+                "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE f.id = ?;";
 
-        try {
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
+                );
 
-            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
-                    "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
-                    "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
-                    "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE f.id = ?;";
-
-            st = conn.prepareStatement(sql);
-
-            st.setLong(1, id);
-
-            st.execute();
-
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ) {
 
 
             List<Application> applications = new ArrayList<>();
@@ -153,23 +110,6 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
             return applications;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
     }
@@ -177,24 +117,17 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
 
     @Override
-    public List<Application> getAll() {
+    public List<Application> getAll() throws SQLException {
 
-        Statement st = null;
-        ResultSet rs = null;
+        String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+                "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
+                "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
+                "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id;";
 
-        try {
-
-            String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
-                    "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
-                    "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
-                    "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id;";
-
-            st = conn.createStatement();
-
-            st.execute(sql);
-
-            rs = st.getResultSet();
-
+        try (
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)
+                ){
 
             List<Application> applications = new ArrayList<>();
 
@@ -204,23 +137,6 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
             return applications;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 

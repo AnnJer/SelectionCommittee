@@ -1,6 +1,7 @@
 package dataAccess.dao;
 
 import auth.Session;
+import jdk.jshell.spi.ExecutionControl;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -23,33 +24,28 @@ public class SessionDAO implements DAO<Session>, Closeable {
 
     @Override
     public Session get(long id) {
+        // TODO: implement get
         return null;
     }
 
     @Override
     public List<Session> getAll() {
+        // TODO: implement getAll
         return null;
     }
 
 
     public Session getByToken(String token) {
 
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE token = ? AND NOW() < end_date;";
 
-        PreparedStatement st = null;
-        ResultSet rs = null;
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setString(1, token)
+                );
 
-        try {
-
-            String sql = "SELECT * FROM " + TABLE_NAME + " WHERE token = ? AND NOW() < end_date;";
-
-            st = conn.prepareStatement(sql);
-
-            st.setString(1, token);
-
-
-            st.execute();
-
-            rs = st.getResultSet();
+                ResultSet rs = st.executeQuery()
+                ) {
 
             if (!rs.next()) {
                 return null;
@@ -60,20 +56,6 @@ public class SessionDAO implements DAO<Session>, Closeable {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        } finally {
-            try {
-
-                if (st != null) {
-                    st.close();
-                }
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -84,38 +66,39 @@ public class SessionDAO implements DAO<Session>, Closeable {
         String sql = "INSERT INTO " + TABLE_NAME +
                 " (token, type, id_user, start_date, end_date) VALUES (?, ?, ?, NOW(), NOW() + INTERVAL '3 DAY');";
 
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> {
+                            st1.setString(1, session.getToken());
+                            st1.setString(2, session.getType());
+                            st1.setLong(3, session.getUserId());
+                        }
+                )
+                ) {
 
-        PreparedStatement st = conn.prepareStatement(sql);
-
-        st.setString(1, session.getToken());
-        st.setString(2, session.getType());
-        st.setLong(3, session.getUserId());
-
-
-        st.executeUpdate();
-
-        st.close();
-
-        return session;
+            st.executeUpdate();
+            return session;
+        }
     }
 
 
     @Override
     public void update(Session session) throws Exception {
-
+        throw new ExecutionControl.NotImplementedException("Session are immutable");
     }
 
 
-    public void deleteByToken(String token) throws SQLException {
+    public void deleteByToken(String token) throws Exception {
+
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE token = ?";
 
-        PreparedStatement st = conn.prepareStatement(sql);
-
-        st.setString(1, token);
-
-        st.executeUpdate();
-
-        st.close();
+        try (
+                PreparedStatement st = Utils.getPreparedStatement(
+                        conn, sql, (PreparedStatement st1) -> st1.setString(1, token)
+                )
+                ) {
+            st.executeUpdate();
+        }
     }
 
 

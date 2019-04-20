@@ -50,4 +50,9 @@ public class DBSingleDAOFactory implements DAOFactory {
     public ApplicationsDAO getApplicationDAO() throws Exception {
         return new ApplicationsDAO(conn);
     }
+
+    @Override
+    public StatementDAO getStatementDAO() throws Exception {
+        return new StatementDAO(conn);
+    }
 }

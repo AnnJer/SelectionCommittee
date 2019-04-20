@@ -30,6 +30,8 @@ public class GetFacultiesCommand implements Command {
 
             return facultiesArr;
 
+        } catch (GuardException e) {
+            throw e;
         } catch (Exception e) {
             throw new GuardException("Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }

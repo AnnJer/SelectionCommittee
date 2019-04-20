@@ -158,7 +158,7 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
         }
     }
 
-    public void batchInsert(List<RateFactorResult> results, long userId) throws Exception {
+    public void saveAll(List<RateFactorResult> results, long userId) throws Exception {
 
         StringBuilder sql = new StringBuilder("INSERT INTO " + TABLE_NAME + "(result, type, id_user) VALUES ");
 

@@ -50,4 +50,11 @@ public class DBPoolDAOFactory implements DAOFactory {
     public ApplicationsDAO getApplicationDAO() throws Exception {
         return new ApplicationsDAO(ds.getConnection());
     }
+
+    @Override
+    public StatementDAO getStatementDAO() throws Exception {
+        return new StatementDAO(ds.getConnection());
+    }
+
+
 }

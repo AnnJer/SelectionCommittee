@@ -2,6 +2,7 @@ import common.Router;
 import common.ServiceProvider;
 import dataAccess.Crypto;
 import dataAccess.DBAccessFactory;
+import dataAccess.dao.StatementDAO;
 import json.*;
 import org.junit.Test;
 import user.Enrollee;
@@ -43,7 +44,11 @@ public class AuthLogic {
 //        System.out.println(answer.encode());
 
         try {
-            System.out.println(DBAccessFactory.getInstance().getDAOFactory().getUserDAO().get(1));
+            StatementDAO statementDAO = DBAccessFactory.getInstance().getDAOFactory().getStatementDAO();
+
+            System.out.println(statementDAO.getByEnrolleeId(2, 1));
+
+            statementDAO.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

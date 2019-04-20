@@ -1,4 +1,4 @@
-package dataAccess.dao;
+package dataAccess.dao.common;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

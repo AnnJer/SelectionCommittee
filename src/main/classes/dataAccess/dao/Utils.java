@@ -1,5 +1,7 @@
 package dataAccess.dao;
 
+import dataAccess.dao.common.StatementCompiler;
+
 import java.sql.*;
 
 class Utils {

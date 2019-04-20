@@ -11,5 +11,6 @@ public interface DAOFactory {
     SessionDAO getSessionDAO() throws Exception;
     FacultyDAO getFacultyDAO() throws Exception;
     ApplicationsDAO getApplicationDAO() throws Exception;
+    StatementDAO getStatementDAO() throws Exception;
 
 }

@@ -4,10 +4,7 @@ import common.ResponseWriterUtil;
 import common.ServiceProvider;
 import common.exceptions.GuardException;
 import dataAccess.DataAccessFactory;
-import dataAccess.dao.ApplicationsDAO;
-import dataAccess.dao.FacultyDAO;
-import dataAccess.dao.RateFactorResultDAO;
-import dataAccess.dao.SubjectDAO;
+import dataAccess.dao.*;
 import dataAccess.transactions.Transaction;
 import json.JsonComponent;
 import json.JsonUtil;
@@ -90,6 +87,45 @@ public class SelectionCommittee {
         }
     }
 
+    public  List<Statement>  getStatementByFaculty(long id, long selectionRoundId) throws Exception {
+        try (
+                StatementDAO statementDAO = dataAccessFactory.getDAOFactory().getStatementDAO();
+        ) {
+            return statementDAO.getByFacultyId(id, selectionRoundId);
+        }
+    }
+
+    public List<Statement> getStatementByEnrollee(long id, long selectionRoundId) throws Exception {
+        try (
+                StatementDAO statementDAO = dataAccessFactory.getDAOFactory().getStatementDAO();
+        ) {
+            return statementDAO.getByEnrolleeId(id, selectionRoundId);
+        }
+    }
+
+    public void saveStatements(List<Statement> statements) throws Exception {
+        try (
+                StatementDAO statementDAO = dataAccessFactory.getDAOFactory().getStatementDAO();
+        ) {
+            statementDAO.saveAll(statements);
+        }
+    }
+
+    public List<Statement> getAllStatements() throws Exception {
+        try (
+                StatementDAO statementDAO = dataAccessFactory.getDAOFactory().getStatementDAO();
+        ) {
+            return statementDAO.getAll();
+        }
+    }
+
+    public Statement getStatementById(long id) throws Exception {
+        try (
+                StatementDAO statementDAO = dataAccessFactory.getDAOFactory().getStatementDAO();
+        ) {
+            return statementDAO.get(id);
+        }
+    }
 
     public JsonComponent deleteApplication(long id) throws Exception {
         try (
@@ -174,7 +210,7 @@ public class SelectionCommittee {
             RateFactorResultDAO rateFactorResultDAO = daoFactory.getRateFactorResultDAO();
 
             rateFactorResultDAO.deleteByEnrolleId(userId);
-            rateFactorResultDAO.batchInsert(results, userId);
+            rateFactorResultDAO.saveAll(results, userId);
 
         });
 

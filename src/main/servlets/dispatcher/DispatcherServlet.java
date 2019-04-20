@@ -47,6 +47,10 @@ public class DispatcherServlet extends HttpServlet {
 
         router.add(RequestTypes.POST, "/rate_factors/results/{id}", new PostRateFactorResultsCommand());
 
+        // ? filterBy = [faculty, enrollee], filterId = id of enrollee or faculty, selectionRoundId
+        router.add(RequestTypes.GET, "/statements", new GetStatementsCommand());
+        router.add(RequestTypes.POST, "/statements", new PostConcreteStatementCommand());
+
     }
 
     @Override

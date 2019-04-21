@@ -29,21 +29,22 @@ public class GetStatementsCommand implements Command {
 
             if (filterBy != null) {
 
-                if (selectionRoundId == null) {
-                    throw new GuardException("selectionRoundId is Empty");
-                }
-
                 if (filterId == null) {
                     throw new GuardException("filterId is Empty");
                 }
 
                 if (filterBy.equals("faculty")) {
-                    statements = ServiceProvider.getInstance().getSelectionCommittee().getStatementByEnrollee(
+
+                    if (selectionRoundId == null) {
+                        throw new GuardException("selectionRoundId is Empty");
+                    }
+
+                    statements = ServiceProvider.getInstance().getSelectionCommittee().getStatementByFaculty(
                             Long.parseLong(filterId), Long.parseLong(selectionRoundId)
                     );
                 } else {
                     statements = ServiceProvider.getInstance().getSelectionCommittee().getStatementByEnrollee(
-                            Long.parseLong(filterId), Long.parseLong(selectionRoundId)
+                            Long.parseLong(filterId)
                     );
                 }
 

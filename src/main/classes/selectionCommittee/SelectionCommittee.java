@@ -95,11 +95,11 @@ public class SelectionCommittee {
         }
     }
 
-    public List<Statement> getStatementByEnrollee(long id, long selectionRoundId) throws Exception {
+    public List<Statement> getStatementByEnrollee(long id) throws Exception {
         try (
                 StatementDAO statementDAO = dataAccessFactory.getDAOFactory().getStatementDAO();
         ) {
-            return statementDAO.getByEnrolleeId(id, selectionRoundId);
+            return statementDAO.getByEnrolleeId(id);
         }
     }
 

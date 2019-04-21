@@ -51,6 +51,9 @@ public class DispatcherServlet extends HttpServlet {
         router.add(RequestTypes.GET, "/statements", new GetStatementsCommand());
         router.add(RequestTypes.POST, "/statements", new PostConcreteStatementCommand());
 
+
+        // TODO: admin checking and checking that selection round was ended.
+
     }
 
     @Override

@@ -80,7 +80,7 @@ public class StatementDAO implements DAO<Statement>, Closeable {
         }
     }
 
-    public List<Statement> getByEnrolleeId(long id, long selectionRoundId) throws Exception {
+    public List<Statement> getByEnrolleeId(long id) throws Exception {
         String sql = "SELECT s.*, " +
                 "e.name AS e_name, " +
                 "e.surname AS e_surname, " +
@@ -88,14 +88,11 @@ public class StatementDAO implements DAO<Statement>, Closeable {
                 "f.id AS f_id, " +
                 "f.label AS f_label FROM " + TABLE_NAME + " AS s " +
                 "JOIN " + ENROLLEE_TABLE_NAME + " AS e ON (s.id_enrollee = e.id) " +
-                "JOIN " + FACULTIES_TABLE_NAME + " AS f ON (s.id_faculty = f.id) WHERE e.id = ? AND s.id_selection_round = ?;";
+                "JOIN " + FACULTIES_TABLE_NAME + " AS f ON (s.id_faculty = f.id) WHERE e.id = ?;";
 
         try (
                 PreparedStatement st = Utils.getPreparedStatement(
-                        conn, sql, (PreparedStatement st1) -> {
-                            st1.setLong(1, id);
-                            st1.setLong(2, selectionRoundId);
-                        }
+                        conn, sql, (PreparedStatement st1) -> st1.setLong(1, id)
                 );
 
                 ResultSet rs = st.executeQuery()

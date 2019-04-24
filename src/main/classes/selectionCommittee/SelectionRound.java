@@ -26,6 +26,14 @@ public class SelectionRound implements JsonSerializable {
     protected RateFactorCoefficient schoolCertificate;
     protected int selectionPlan;
 
+    public SelectionRound(Long id, Date startDate, Date endDate, List<RateFactorCoefficient> requiredExams, RateFactorCoefficient schoolCertificate, int selectionPlan) {
+        this.id = id;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.requiredExams = requiredExams;
+        this.schoolCertificate = schoolCertificate;
+        this.selectionPlan = selectionPlan;
+    }
 
     public SelectionRound(Date startDate, Date endDate, List<RateFactorCoefficient> requiredExams, RateFactorCoefficient schoolCertificate, int selectionPlan) {
         this.startDate = startDate;
@@ -150,6 +158,9 @@ public class SelectionRound implements JsonSerializable {
     public JsonComponent toJson() {
         return JsonUtil.object(new HashMap<>() {
             {
+
+                put("id", JsonUtil.number(id));
+
                 put("start_date", JsonUtil.string(startDate.toString()));
                 put("end_date", JsonUtil.string(endDate.toString()));
 

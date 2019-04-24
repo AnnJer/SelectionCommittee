@@ -33,8 +33,16 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
     public Application get(long id) {
 
 
-        String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname," +
-                " f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+        String sql = "SELECT a.id, " +
+                "a.rating, " +
+                "a.c_date, " +
+                "u.name, " +
+                "u.lastname, " +
+                "u.surname," +
+                " f.label, " +
+                "s.selection_plan, " +
+                "f.id as f_id, " +
+                "u.id as u_id FROM " + TABLE_NAME + " AS a " +
                 "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
                 "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                 "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE a.id = ?;";
@@ -62,7 +70,16 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
     public Application getByUserId(long id) throws SQLException {
 
-        String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+        String sql = "SELECT a.id, " +
+                "a.rating, " +
+                "a.c_date, " +
+                "u.name, " +
+                "u.lastname, " +
+                "u.surname, " +
+                "f.label, " +
+                "s.selection_plan, " +
+                "f.id as f_id, " +
+                "u.id as u_id FROM " + TABLE_NAME + " AS a " +
                 "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
                 "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                 "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE u.id = ?;";
@@ -88,7 +105,16 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
     public List<Application> getByFacultyId(long id) throws SQLException {
 
-        String sql = "SELECT a.id, a.rating, a.c_date, u.name, u.lastname, u.surname, f.label, s.selection_plan, f.id as f_id FROM " + TABLE_NAME + " AS a " +
+        String sql = "SELECT a.id, " +
+                "a.rating, " +
+                "a.c_date, " +
+                "u.name, " +
+                "u.lastname, " +
+                "u.surname, " +
+                "f.label, " +
+                "s.selection_plan, " +
+                "f.id as f_id, " +
+                "u.id as u_id FROM " + TABLE_NAME + " AS a " +
                 "JOIN " + USER_TABLE_NAME + " AS u ON a.id_user = u.id " +
                 "JOIN " + FACULTIES_TABLE_NAME + " AS f ON a.id_faculty = f.id " +
                 "JOIN  " + SELECTION_ROUND_TABLE + " AS s ON f.id_selection_round = s.id WHERE f.id = ?;";
@@ -177,6 +203,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
         float rating = rs.getFloat("rating");
         Date date = rs.getDate("c_date");
 
+        Long userId = rs.getLong("u_id");
         String name = rs.getString("name");
         String lastname = rs.getString("lastname");
         String surname = rs.getString("surname");
@@ -189,7 +216,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
 
         SelectionRound s = new SelectionRound(null, null, null, null, selectionPlan);
         Faculty f = new Faculty(facultyId, label, s, null);
-        User u = new Enrollee(null, name, lastname, surname, null);
+        User u = new Enrollee(userId, name, lastname, surname, null);
 
         return new Application(id, f, u, rating, date);
     }

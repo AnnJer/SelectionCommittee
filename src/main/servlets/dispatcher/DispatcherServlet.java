@@ -43,13 +43,13 @@ public class DispatcherServlet extends HttpServlet {
         router.add(RequestTypes.POST,"/applications", new PostApplicationsCommand());
 
         router.add(RequestTypes.GET,"/applications/{id}", new GetConcreteApplicationCommand());
-        router.add(RequestTypes.DELETE,"/applications/{id}", new DeleteConcreteFacultyCommand());
+        router.add(RequestTypes.DELETE,"/applications/{id}", new DeleteConcreteApplicationCommand());
 
         router.add(RequestTypes.POST, "/rate_factors/results/{id}", new PostRateFactorResultsCommand());
 
         // ? filterBy = [faculty, enrollee], filterId = id of enrollee or faculty, selectionRoundId
         router.add(RequestTypes.GET, "/statements", new GetStatementsCommand());
-        router.add(RequestTypes.POST, "/statements", new PostConcreteStatementCommand());
+        router.add(RequestTypes.POST, "/statements", new PostStatementCommand());
 
 
         // TODO: admin checking and checking that selection round was ended.

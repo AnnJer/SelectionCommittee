@@ -29,6 +29,7 @@ public class StatementDAO implements DAO<Statement>, Closeable {
     @Override
     public Statement get(long id) throws Exception {
         String sql = "SELECT s.*, " +
+                     "e.id AS e_id, " +
                      "e.name AS e_name, " +
                      "e.surname AS e_surname, " +
                      "e.lastname AS e_lastname, " +
@@ -58,6 +59,7 @@ public class StatementDAO implements DAO<Statement>, Closeable {
 
     public List<Statement> getByFacultyId(long id, long selectionRoundId) throws Exception {
         String sql = "SELECT s.*, " +
+                "e.id AS e_id, " +
                 "e.name AS e_name, " +
                 "e.surname AS e_surname, " +
                 "e.lastname AS e_lastname, " +
@@ -82,6 +84,7 @@ public class StatementDAO implements DAO<Statement>, Closeable {
 
     public List<Statement> getByEnrolleeId(long id) throws Exception {
         String sql = "SELECT s.*, " +
+                "e.id AS e_id, " +
                 "e.name AS e_name, " +
                 "e.surname AS e_surname, " +
                 "e.lastname AS e_lastname, " +
@@ -104,10 +107,16 @@ public class StatementDAO implements DAO<Statement>, Closeable {
 
     public void saveAll(List<Statement> statements) throws SQLException {
 
-        StringBuilder sql = new StringBuilder("INSERT INTO " + TABLE_NAME + "(id_faculty, id_enrollee, rating, c_date) VALUES");
+        StringBuilder sql = new StringBuilder("INSERT INTO " + TABLE_NAME + "(id_faculty, id_enrollee, id_selection_round, rating, c_date) VALUES");
 
+        int j = 0;
         for (Statement statement: statements) {
-            sql.append(" (?, ?, (SELECT rating FROM " + APPLICATIONS_TABLE_NAME + " WHERE id_user = ?), now())");
+            sql.append(" (?, ?, ?, (SELECT rating FROM " + APPLICATIONS_TABLE_NAME + " WHERE id_user = ?), now())");
+
+            if (j < statements.size() - 1) {
+                sql.append(", ");
+            }
+            j++;
         }
 
         try (
@@ -117,6 +126,7 @@ public class StatementDAO implements DAO<Statement>, Closeable {
                             for (Statement statement: statements) {
                                 st1.setLong(++i, statement.getFaculty().getId());
                                 st1.setLong(++i, statement.getEnrollee().getId());
+                                st1.setLong(++i, statement.getSelectionRoundId());
                                 st1.setLong(++i, statement.getEnrollee().getId());
                             }
                         }
@@ -157,12 +167,13 @@ public class StatementDAO implements DAO<Statement>, Closeable {
 
     protected Enrollee parseEnrolleeFromResultSet(ResultSet rs) throws SQLException {
 
+        Long id = rs.getLong("e_id");
         String name = rs.getString("e_name");
         String surname = rs.getString("e_surname");
         String lastname = rs.getString("e_lastname");
 
 
-        return new Enrollee(null, name, surname, lastname, null);
+        return new Enrollee(id, name, surname, lastname, null);
     }
 
     protected Faculty parseFacultyFromResultSet(ResultSet rs) throws SQLException {

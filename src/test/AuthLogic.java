@@ -43,15 +43,15 @@ public class AuthLogic {
 //
 //        System.out.println(answer.encode());
 
-        try {
-            StatementDAO statementDAO = DBAccessFactory.getInstance().getDAOFactory().getStatementDAO();
-
-            System.out.println(statementDAO.getByEnrolleeId(2, 1));
-
-            statementDAO.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            StatementDAO statementDAO = DBAccessFactory.getInstance().getDAOFactory().getStatementDAO();
+//
+//            System.out.println(statementDAO.getByFacultyId(1, 1));
+//
+//            statementDAO.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
 //        try {
@@ -59,8 +59,6 @@ public class AuthLogic {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-
-//        System.out.println(new String(Crypto.encodePassword("222".getBytes(), "222".getBytes())));
 
     }
 

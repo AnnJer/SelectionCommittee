@@ -9,7 +9,7 @@ import json.JsonComponent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DeleteConcreteFacultyCommand implements Command {
+public class DeleteConcreteApplicationCommand implements Command {
 
 
     @Override
@@ -20,7 +20,10 @@ public class DeleteConcreteFacultyCommand implements Command {
 
             return ServiceProvider.getInstance().getSelectionCommittee().deleteApplication(id);
 
+        } catch (GuardException e) {
+            throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new GuardException("Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }
     }

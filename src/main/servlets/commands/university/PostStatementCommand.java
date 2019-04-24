@@ -7,17 +7,17 @@ import common.exceptions.GuardException;
 import json.JsonComponent;
 import json.JsonUtil;
 import selectionCommittee.Faculty;
+import selectionCommittee.SelectionRound;
 import selectionCommittee.Statement;
 import user.Enrollee;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class PostConcreteStatementCommand implements Command {
+public class PostStatementCommand implements Command {
 
     @Override
     public JsonComponent execute(HttpServletRequest req, HttpServletResponse resp) throws GuardException {
@@ -47,11 +47,19 @@ public class PostConcreteStatementCommand implements Command {
 
             List<Statement> statements = new ArrayList<>();
 
+            Faculty faculty =  new Faculty(Long.parseLong(facultyIdStr), null, null, null);
+
+            SelectionRound selectionRound = new SelectionRound(
+                    Long.parseLong(selectionRoundIdStr), null, null, null, null, 0
+            );
+
+            faculty.setSelectionRound(selectionRound);
+
             for (String s: enrolleeIdListStr) {
                 statements.add(
                         new Statement(
                                 null,
-                                new Faculty(Long.parseLong(facultyIdStr), null, null, null),
+                                faculty,
                                 new Enrollee(Long.parseLong(s), null, null, null, null),
                                 Long.parseLong(selectionRoundIdStr),
                                 null,
@@ -71,6 +79,7 @@ public class PostConcreteStatementCommand implements Command {
         } catch (GuardException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new GuardException("Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }
     }

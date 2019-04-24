@@ -5,6 +5,7 @@ import common.ResponseWriterUtil;
 import common.ServiceProvider;
 import common.exceptions.GuardException;
 import json.JsonComponent;
+import json.JsonUtil;
 import selectionCommittee.Faculty;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,11 +21,16 @@ public class GetConcreteFacultyCommand extends RestCommand {
 
             Faculty faculty = ServiceProvider.getInstance().getSelectionCommittee().getFacultyById(id);
 
+            if (faculty == null) {
+                return JsonUtil.object();
+            }
+
             return faculty.toJson();
 
         } catch (GuardException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new GuardException("Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }
     }

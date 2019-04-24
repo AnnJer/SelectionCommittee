@@ -67,6 +67,7 @@ public class GetStatementsCommand implements Command {
         } catch (GuardException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new GuardException("Something go wrong", ResponseWriterUtil.SERVER_ERROR);
         }
     }

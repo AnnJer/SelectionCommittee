@@ -90,6 +90,7 @@ public class Application implements JsonSerializable {
                 }));
                 put("user", JsonUtil.object(new HashMap<>() {
                     {
+                        put("id", JsonUtil.number(user.getId()));
                         put("name", JsonUtil.string(user.getName()));
                         put("surname", JsonUtil.string(user.getSurname()));
                         put("lastname", JsonUtil.string(user.getLastname()));

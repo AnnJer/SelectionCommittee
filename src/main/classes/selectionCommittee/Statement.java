@@ -15,17 +15,17 @@ public class Statement implements JsonSerializable {
     private Faculty faculty;
     private Enrollee enrollee;
 
-    private Long idSelectionRound;
+    private Long selectionRoundId;
 
     private Float rating;
     private Date cDate;
 
 
-    public Statement(Long id, Faculty faculty, Enrollee enrollee, Long idSelectionRound, Float rating, Date cDate) {
+    public Statement(Long id, Faculty faculty, Enrollee enrollee, Long selectionRoundId, Float rating, Date cDate) {
         this.id = id;
         this.faculty = faculty;
         this.enrollee = enrollee;
-        this.idSelectionRound = idSelectionRound;
+        this.selectionRoundId = selectionRoundId;
         this.rating = rating;
         this.cDate = cDate;
     }
@@ -54,12 +54,12 @@ public class Statement implements JsonSerializable {
         this.enrollee = enrollee;
     }
 
-    public Long getIdSelectionRound() {
-        return idSelectionRound;
+    public Long getSelectionRoundId() {
+        return selectionRoundId;
     }
 
-    public void setIdSelectionRound(Long idSelectionRound) {
-        this.idSelectionRound = idSelectionRound;
+    public void setSelectionRoundId(Long selectionRoundId) {
+        this.selectionRoundId = selectionRoundId;
     }
 
     public Float getRating() {
@@ -91,6 +91,7 @@ public class Statement implements JsonSerializable {
                 }));
                 put("enrollee", JsonUtil.object(new HashMap<>() {
                     {
+                        put("id", JsonUtil.number(enrollee.getId()));
                         put("name", JsonUtil.string(enrollee.getName()));
                         put("surname", JsonUtil.string(enrollee.getSurname()));
                         put("lastname", JsonUtil.string(enrollee.getLastname()));

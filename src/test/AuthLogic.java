@@ -1,15 +1,6 @@
-import common.Router;
-import common.ServiceProvider;
-import dataAccess.Crypto;
-import dataAccess.DBAccessFactory;
-import dataAccess.dao.StatementDAO;
-import json.*;
 import org.junit.Test;
 import user.Enrollee;
 import user.User;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class AuthLogic {
 

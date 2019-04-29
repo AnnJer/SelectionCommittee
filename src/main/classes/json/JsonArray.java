@@ -1,6 +1,7 @@
 package json;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class JsonArray implements JsonComponent {
@@ -13,7 +14,7 @@ public class JsonArray implements JsonComponent {
 
 
     public JsonArray() {
-        values = new ArrayList<>();
+        values = new LinkedList<>();
     }
 
     public JsonArray(List<JsonComponent> values) {

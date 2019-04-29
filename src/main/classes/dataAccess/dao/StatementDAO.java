@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class StatementDAO implements DAO<Statement>, Closeable {
@@ -148,7 +149,7 @@ public class StatementDAO implements DAO<Statement>, Closeable {
 
     protected List<Statement> getStatementsWithFacultyAndEnrolleeInfo(ResultSet rs) throws SQLException {
 
-        List<Statement> statements = new ArrayList<>();
+        List<Statement> statements = new LinkedList<>();
 
         while (rs.next()) {
 

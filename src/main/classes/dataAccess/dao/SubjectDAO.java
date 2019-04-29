@@ -6,6 +6,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SubjectDAO implements DAO<Subject>, Closeable {
@@ -48,7 +49,7 @@ public class SubjectDAO implements DAO<Subject>, Closeable {
                 ResultSet rs = st.executeQuery(sql)
                 ) {
 
-            List<Subject> subjects = new ArrayList<>();
+            List<Subject> subjects = new LinkedList<>();
 
             while(rs.next()) {
                 subjects.add(parseFromResultSet(rs));

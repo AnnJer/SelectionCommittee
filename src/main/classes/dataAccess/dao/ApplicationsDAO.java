@@ -11,6 +11,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ApplicationsDAO implements DAO<Application>, Closeable {
@@ -128,7 +129,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
                 ) {
 
 
-            List<Application> applications = new ArrayList<>();
+            List<Application> applications = new LinkedList<>();
 
             while(rs.next()) {
                 applications.add(parseFromResultSet(rs));
@@ -155,7 +156,7 @@ public class ApplicationsDAO implements DAO<Application>, Closeable {
                 ResultSet rs = st.executeQuery(sql)
                 ){
 
-            List<Application> applications = new ArrayList<>();
+            List<Application> applications = new LinkedList<>();
 
             while(rs.next()) {
                 applications.add(parseFromResultSet(rs));

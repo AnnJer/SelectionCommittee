@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
@@ -36,7 +37,7 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
 
                 ResultSet rs = st.executeQuery()
                 ){
-            List<RateFactorResult> rateFactorResults = new ArrayList<>();
+            List<RateFactorResult> rateFactorResults = new LinkedList<>();
 
             while(rs.next()) {
                 rateFactorResults.add(parseFromResultSet(rs));
@@ -80,7 +81,7 @@ public class RateFactorResultDAO implements DAO<RateFactorResult>, Closeable {
                 ResultSet rs = st.executeQuery(sql)
                 ){
 
-            List<RateFactorResult> rateFactorResults = new ArrayList<>();
+            List<RateFactorResult> rateFactorResults = new LinkedList<>();
 
             while(rs.next()) {
                 rateFactorResults.add(parseFromResultSet(rs));

@@ -124,7 +124,7 @@ public class UserDAO implements DAO<User>, Closeable {
 
             if (!userHashMapList.containsKey(id)) {
                 userHashMapList.put(id, parseFromResultSet(rs));
-                results.put(id, new ArrayList<>());
+                results.put(id, new LinkedList<>());
             }
 
 

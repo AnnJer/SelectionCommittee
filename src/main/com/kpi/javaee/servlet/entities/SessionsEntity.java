@@ -12,13 +12,20 @@ public class SessionsEntity {
 
     private static final Integer sessionLifeTime = 60*60*3; // 3h
 
+    @Id
+    @Column(name = "token", nullable = false, length = 100)
     private String token;
+
+    @Column(name = "start_date")
     private Date startDate;
+
+    @Column(name = "end_date")
     private Date endDate;
+
     private String type;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_user")
     private UsersEntity usersByIdUser;
 
 
@@ -33,8 +40,7 @@ public class SessionsEntity {
         this.endDate = new Date(Date.from(Instant.now()).getTime() + sessionLifeTime);
     }
 
-    @Id
-    @Column(name = "token", nullable = false, length = 100)
+
     public String getToken() {
         return token;
     }
@@ -43,8 +49,6 @@ public class SessionsEntity {
         this.token = token;
     }
 
-    @Basic
-    @Column(name = "start_date", nullable = false)
     public Date getStartDate() {
         return startDate;
     }
@@ -53,8 +57,6 @@ public class SessionsEntity {
         this.startDate = startDate;
     }
 
-    @Basic
-    @Column(name = "end_date", nullable = false)
     public Date getEndDate() {
         return endDate;
     }
@@ -63,8 +65,7 @@ public class SessionsEntity {
         this.endDate = endDate;
     }
 
-    @Basic
-    @Column(name = "type", nullable = true, length = 30)
+
     public String getType() {
         return type;
     }

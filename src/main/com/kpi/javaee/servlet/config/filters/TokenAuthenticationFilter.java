@@ -21,7 +21,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     @Autowired
     private SessionsRepos sessionsRepos;
 
-    @Value("spring.security.token-header")
+    @Value("${spring.security.token-header}")
     private String TOKEN_HEADER_NAME;
 
     @Override

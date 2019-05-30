@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-    private static final String AUTHENTICATE_ENDPOINT = "/login";
+    private static final String AUTHENTICATE_ENDPOINT = "/sign_in";
 
     // Beans connected with translating input and output to JSON
     @Bean
@@ -61,9 +61,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                     .csrf().disable()
 
+
                     .authorizeRequests()
                     .antMatchers("/user", AUTHENTICATE_ENDPOINT).permitAll()
-                    .anyRequest().authenticated()
+//                    .anyRequest().authenticated()
                 .and()
                     .formLogin()
                     .loginPage(AUTHENTICATE_ENDPOINT)

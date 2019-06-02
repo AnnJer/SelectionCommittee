@@ -16,6 +16,7 @@ import user.UserRoles;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class SelectionCommittee {
 
@@ -156,15 +157,15 @@ public class SelectionCommittee {
                 ApplicationsDAO applicationDAO = dataAccessFactory.getDAOFactory().getApplicationDAO();
         ) {
 
-            if (token == null) {
-                throw new GuardException("Not authorized", ResponseWriterUtil.UNAUTHORIZED);
-            }
+            Optional.ofNullable(token).orElseThrow(
+                    () -> new GuardException("Not authorized", ResponseWriterUtil.UNAUTHORIZED)
+            );
 
             User user = ServiceProvider.getInstance().getAuth().getSession(token).getUser();
 
-            if (user == null) {
-                throw new GuardException("Not authorized", ResponseWriterUtil.UNAUTHORIZED);
-            }
+            Optional.ofNullable(user).orElseThrow(
+                    () -> new GuardException("Not authorized", ResponseWriterUtil.UNAUTHORIZED)
+            );
 
             if (user.getRole() != UserRoles.ENROLLEE) {
                 throw new GuardException("Permission denied", ResponseWriterUtil.FORBIDDEN);

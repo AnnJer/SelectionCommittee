@@ -1,8 +1,8 @@
 package com.kpi.javaee.servlet.services;
 
 
-import com.kpi.javaee.servlet.entities.RateFactorResultsEntity;
-import com.kpi.javaee.servlet.entities.UsersEntity;
+import com.kpi.javaee.servlet.entities.RateFactorResultEntity;
+import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.repos.RateFactorResultsRepos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +27,9 @@ public class RateFactorResultsService {
     }
 
     @Transactional  // must lock table by global lock ? will be fixed latter
-    public void insert(List<RateFactorResultsEntity> exams, RateFactorResultsEntity schoolCertificate) {
+    public void insert(List<RateFactorResultEntity> exams, RateFactorResultEntity schoolCertificate) {
 
-        List<RateFactorResultsEntity> rateFactorResultsEntities = new ArrayList<>(exams);
+        List<RateFactorResultEntity> rateFactorResultsEntities = new ArrayList<>(exams);
         rateFactorResultsEntities.add(schoolCertificate);
 
         rateFactorResultsRepos.deleteByUsersByIdUser(schoolCertificate.getUsersByIdUser());
@@ -37,14 +37,14 @@ public class RateFactorResultsService {
         rateFactorResultsRepos.saveAll(rateFactorResultsEntities);
     }
 
-    public RateFactorResultsEntity createExam(double result, String examName, UsersEntity usersEntity) {
+    public RateFactorResultEntity createExam(double result, String examName, UserEntity userEntity) {
         String type = EXAM_PREFIX + TYPE_SEP + examName;
-        return new RateFactorResultsEntity(result, type, usersEntity);
+        return new RateFactorResultEntity(result, type, userEntity);
     }
 
-    public RateFactorResultsEntity createSchoolCertificate(double result, UsersEntity usersEntity) {
+    public RateFactorResultEntity createSchoolCertificate(double result, UserEntity userEntity) {
         String type = SCHOOL_CERTIFICATE_PREFIX;
-        return new RateFactorResultsEntity(result, type, usersEntity);
+        return new RateFactorResultEntity(result, type, userEntity);
     }
 
 }

@@ -10,33 +10,33 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "selection_rounds", schema = "public", catalog = "selectioncommittee")
-public class SelectionRoundsEntity {
+public class SelectionRoundEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private int selectionPlan;
     private Date startDate;
     private Date endDate;
 
     @JsonProperty("rateFactorCoefficients")
     @OneToMany(mappedBy = "selectionRoundsByIdSelectionRound")
-    private Collection<RateFactorCoefficientsEntity> rateFactorCoefficientsById;
+    private Collection<RateFactorCoefficientEntity> rateFactorCoefficientsById;
 
     @JsonIgnore
     @OneToMany(mappedBy = "selectionRoundsByIdSelectionRound")
-    private Collection<StatementsEntity> statementsById;
+    private Collection<StatementEntity> statementsById;
 
-    public SelectionRoundsEntity() {
+    public SelectionRoundEntity() {
     }
 
     @JsonCreator
-    public SelectionRoundsEntity(
-            @JsonProperty("id") int id,
+    public SelectionRoundEntity(
+            @JsonProperty("id") Long id,
             @JsonProperty("selectionPlan") int selectionPlan,
             @JsonProperty("startDate") Date startDate,
             @JsonProperty("endDate") Date endDate,
-            @JsonProperty("rateFactorCoefficients") Collection<RateFactorCoefficientsEntity> rateFactorCoefficientsById
+            @JsonProperty("rateFactorCoefficients") Collection<RateFactorCoefficientEntity> rateFactorCoefficientsById
     ) {
         this.id = id;
         this.selectionPlan = selectionPlan;
@@ -45,11 +45,11 @@ public class SelectionRoundsEntity {
         this.rateFactorCoefficientsById = rateFactorCoefficientsById;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -88,7 +88,7 @@ public class SelectionRoundsEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SelectionRoundsEntity that = (SelectionRoundsEntity) o;
+        SelectionRoundEntity that = (SelectionRoundEntity) o;
 
         if (id != that.id) return false;
         if (selectionPlan != that.selectionPlan) return false;
@@ -98,30 +98,21 @@ public class SelectionRoundsEntity {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + selectionPlan;
-        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
-        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
-        return result;
-    }
 
-
-    public Collection<RateFactorCoefficientsEntity> getRateFactorCoefficientsById() {
+    public Collection<RateFactorCoefficientEntity> getRateFactorCoefficientsById() {
         return rateFactorCoefficientsById;
     }
 
-    public void setRateFactorCoefficientsById(Collection<RateFactorCoefficientsEntity> rateFactorCoefficientsById) {
+    public void setRateFactorCoefficientsById(Collection<RateFactorCoefficientEntity> rateFactorCoefficientsById) {
         this.rateFactorCoefficientsById = rateFactorCoefficientsById;
     }
 
 
-    public Collection<StatementsEntity> getStatementsById() {
+    public Collection<StatementEntity> getStatementsById() {
         return statementsById;
     }
 
-    public void setStatementsById(Collection<StatementsEntity> statementsById) {
+    public void setStatementsById(Collection<StatementEntity> statementsById) {
         this.statementsById = statementsById;
     }
 }

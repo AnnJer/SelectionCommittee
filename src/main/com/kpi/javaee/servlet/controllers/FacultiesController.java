@@ -1,7 +1,7 @@
 package com.kpi.javaee.servlet.controllers;
 
 
-import com.kpi.javaee.servlet.entities.FacultiesEntity;
+import com.kpi.javaee.servlet.entities.FacultyEntity;
 import com.kpi.javaee.servlet.exceptions.EntityNotFoundException;
 import com.kpi.javaee.servlet.repos.FacultiesRepos;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +22,12 @@ public class FacultiesController {
     }
 
     @GetMapping("/{id}")
-    public FacultiesEntity get(@PathVariable(name = "id") Long id) {
+    public FacultyEntity get(@PathVariable(name = "id") Long id) {
         return facultiesRepos.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @GetMapping
-    public Iterable<FacultiesEntity> getAll() {
+    public Iterable<FacultyEntity> getAll() {
         return facultiesRepos.findAll();
     }
 

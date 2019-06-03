@@ -4,20 +4,20 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "subjects", schema = "public", catalog = "selectioncommittee")
-public class SubjectsEntity {
+public class SubjectEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     private String label;
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class SubjectsEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SubjectsEntity that = (SubjectsEntity) o;
+        SubjectEntity that = (SubjectEntity) o;
 
         if (id != that.id) return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
@@ -44,10 +44,4 @@ public class SubjectsEntity {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (label != null ? label.hashCode() : 0);
-        return result;
-    }
 }

@@ -9,45 +9,45 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "faculties", schema = "public", catalog = "selectioncommittee")
-public class FacultiesEntity {
+public class FacultyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private String label;
 
     @ManyToOne
     @JoinColumn(name = "id_selection_round")
-    private SelectionRoundsEntity selectionRound;
+    private SelectionRoundEntity selectionRound;
 
     @JsonIgnore
     @OneToMany(mappedBy = "facultiesByIdFaculty")
-    private Collection<ApplicationsEntity> applicationsById;
+    private Collection<ApplicationEntity> applicationsById;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "facultiesByIdFaculty")
-    private Collection<StatementsEntity> statementsById;
+    private Collection<StatementEntity> statementsById;
 
-    public FacultiesEntity() {
+    public FacultyEntity() {
     }
 
     @JsonCreator
-    public FacultiesEntity(
-            @JsonProperty("id") int id,
+    public FacultyEntity(
+            @JsonProperty("id") Long id,
             @JsonProperty("label") String label,
-            @JsonProperty("selectionRound") SelectionRoundsEntity selectionRound
+            @JsonProperty("selectionRound") SelectionRoundEntity selectionRound
     ) {
         this.id = id;
         this.label = label;
         this.selectionRound = selectionRound;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -62,28 +62,28 @@ public class FacultiesEntity {
     }
 
 
-    public SelectionRoundsEntity getSelectionRound() {
+    public SelectionRoundEntity getSelectionRound() {
         return selectionRound;
     }
 
-    public void setSelectionRound(SelectionRoundsEntity selectionRound) {
+    public void setSelectionRound(SelectionRoundEntity selectionRound) {
         this.selectionRound = selectionRound;
     }
 
-    public Collection<ApplicationsEntity> getApplicationsById() {
+    public Collection<ApplicationEntity> getApplicationsById() {
         return applicationsById;
     }
 
-    public void setApplicationsById(Collection<ApplicationsEntity> applicationsById) {
+    public void setApplicationsById(Collection<ApplicationEntity> applicationsById) {
         this.applicationsById = applicationsById;
     }
 
 
-    public Collection<StatementsEntity> getStatementsById() {
+    public Collection<StatementEntity> getStatementsById() {
         return statementsById;
     }
 
-    public void setStatementsById(Collection<StatementsEntity> statementsById) {
+    public void setStatementsById(Collection<StatementEntity> statementsById) {
         this.statementsById = statementsById;
     }
 }

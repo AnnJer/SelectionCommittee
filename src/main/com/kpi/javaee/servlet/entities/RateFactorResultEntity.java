@@ -8,11 +8,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "rate_factor_results", schema = "public", catalog = "selectioncommittee")
-public class RateFactorResultsEntity {
+public class RateFactorResultEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     private double result;
     private String type;
@@ -20,16 +20,16 @@ public class RateFactorResultsEntity {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_user")
-    private UsersEntity usersByIdUser;
+    private UserEntity usersByIdUser;
 
 
-    public RateFactorResultsEntity() {
+    public RateFactorResultEntity() {
     }
 
-    public RateFactorResultsEntity(
+    public RateFactorResultEntity(
             double result,
             String type,
-            UsersEntity usersByIdUser
+            UserEntity usersByIdUser
     ) {
         this.result = result;
         this.type = type;
@@ -37,7 +37,7 @@ public class RateFactorResultsEntity {
     }
 
     @JsonCreator
-    public RateFactorResultsEntity(
+    public RateFactorResultEntity(
             @JsonProperty("result") double result,
             @JsonProperty("type") String type
     ) {
@@ -46,11 +46,11 @@ public class RateFactorResultsEntity {
     }
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,7 +79,7 @@ public class RateFactorResultsEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RateFactorResultsEntity that = (RateFactorResultsEntity) o;
+        RateFactorResultEntity that = (RateFactorResultEntity) o;
 
         if (id != that.id) return false;
         if (Double.compare(that.result, result) != 0) return false;
@@ -88,23 +88,11 @@ public class RateFactorResultsEntity {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result1;
-        long temp;
-        result1 = id;
-        temp = Double.doubleToLongBits(result);
-        result1 = 31 * result1 + (int) (temp ^ (temp >>> 32));
-        result1 = 31 * result1 + (type != null ? type.hashCode() : 0);
-        return result1;
-    }
-
-
-    public UsersEntity getUsersByIdUser() {
+    public UserEntity getUsersByIdUser() {
         return usersByIdUser;
     }
 
-    public void setUsersByIdUser(UsersEntity usersByIdUser) {
+    public void setUsersByIdUser(UserEntity usersByIdUser) {
         this.usersByIdUser = usersByIdUser;
     }
 }

@@ -1,6 +1,6 @@
 package com.kpi.javaee.servlet.controllers;
 
-import com.kpi.javaee.servlet.entities.SubjectsEntity;
+import com.kpi.javaee.servlet.entities.SubjectEntity;
 import com.kpi.javaee.servlet.repos.SubjectsRepos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ public class SubjectsController {
     }
 
     @GetMapping
-    public Iterable<SubjectsEntity> getAll() {
+    public Iterable<SubjectEntity> getAll() {
         return subjectsRepos.findAll();
     }
 

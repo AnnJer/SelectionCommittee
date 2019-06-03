@@ -3,21 +3,21 @@ package com.kpi.javaee.servlet.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.repository.cdi.Eager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users", schema = "public", catalog = "selectioncommittee")
-public class UsersEntity implements UserDetails {
+public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     private String name;
     private String surname;
@@ -28,11 +28,11 @@ public class UsersEntity implements UserDetails {
 
     @JsonIgnore
     @OneToMany(mappedBy = "usersByIdUser")
-    private Collection<ApplicationsEntity> applicationsById;
+    private Collection<ApplicationEntity> applicationsById;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "usersByIdUser")
-    private Collection<RateFactorResultsEntity> rateFactorResultsById;
+    @OneToMany(mappedBy = "usersByIdUser", fetch = FetchType.EAGER)
+    private Collection<RateFactorResultEntity> rateFactorResultsById;
 
     @JsonIgnore
     @OneToMany(mappedBy = "usersByIdUser")
@@ -40,14 +40,14 @@ public class UsersEntity implements UserDetails {
 
     @JsonIgnore
     @OneToMany(mappedBy = "usersByIdEnrollee")
-    private Collection<StatementsEntity> statementsById;
+    private Collection<StatementEntity> statementsById;
 
 
-    public UsersEntity() {
+    public UserEntity() {
     }
 
     @JsonCreator
-    public UsersEntity(
+    public UserEntity(
             @JsonProperty("name") String name,
             @JsonProperty("surname") String surname,
             @JsonProperty("lastname") String lastname,
@@ -62,11 +62,11 @@ public class UsersEntity implements UserDetails {
         this.role = role;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -165,7 +165,7 @@ public class UsersEntity implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UsersEntity that = (UsersEntity) o;
+        UserEntity that = (UserEntity) o;
 
         if (id != that.id) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -178,33 +178,21 @@ public class UsersEntity implements UserDetails {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (surname != null ? surname.hashCode() : 0);
-        result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
-        result = 31 * result + (login != null ? login.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (role != null ? role.hashCode() : 0);
-        return result;
-    }
 
-
-    public Collection<ApplicationsEntity> getApplicationsById() {
+    public Collection<ApplicationEntity> getApplicationsById() {
         return applicationsById;
     }
 
-    public void setApplicationsById(Collection<ApplicationsEntity> applicationsById) {
+    public void setApplicationsById(Collection<ApplicationEntity> applicationsById) {
         this.applicationsById = applicationsById;
     }
 
 
-    public Collection<RateFactorResultsEntity> getRateFactorResultsById() {
+    public Collection<RateFactorResultEntity> getRateFactorResultsById() {
         return rateFactorResultsById;
     }
 
-    public void setRateFactorResultsById(Collection<RateFactorResultsEntity> rateFactorResultsById) {
+    public void setRateFactorResultsById(Collection<RateFactorResultEntity> rateFactorResultsById) {
         this.rateFactorResultsById = rateFactorResultsById;
     }
 
@@ -217,11 +205,11 @@ public class UsersEntity implements UserDetails {
     }
 
 
-    public Collection<StatementsEntity> getStatementsById() {
+    public Collection<StatementEntity> getStatementsById() {
         return statementsById;
     }
 
-    public void setStatementsById(Collection<StatementsEntity> statementsById) {
+    public void setStatementsById(Collection<StatementEntity> statementsById) {
         this.statementsById = statementsById;
     }
 }

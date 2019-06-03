@@ -1,13 +1,13 @@
 package com.kpi.javaee.servlet.repos;
 
-import com.kpi.javaee.servlet.entities.FacultiesEntity;
-import com.kpi.javaee.servlet.entities.StatementsEntity;
-import com.kpi.javaee.servlet.entities.UsersEntity;
+import com.kpi.javaee.servlet.entities.FacultyEntity;
+import com.kpi.javaee.servlet.entities.StatementEntity;
+import com.kpi.javaee.servlet.entities.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 
-public interface StatementsRepos extends CrudRepository<StatementsEntity, Long> {
+public interface StatementsRepos extends CrudRepository<StatementEntity, Long> {
 
-    Iterable<StatementsEntity> findAllByFacultiesByIdFaculty(FacultiesEntity facultiesEntity);
-    Iterable<StatementsEntity> findAllByUsersByIdEnrollee(UsersEntity usersEntity);
+    Iterable<StatementEntity> findAllByFacultiesByIdFaculty(FacultyEntity facultyEntity);
+    Iterable<StatementEntity> findAllByUsersByIdEnrollee(UserEntity userEntity);
 
 }

@@ -8,25 +8,25 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "rate_factor_coefficients", schema = "public", catalog = "selectioncommittee")
-public class RateFactorCoefficientsEntity {
+public class RateFactorCoefficientEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private double coefficient;
     private String type;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_selection_round")
-    private SelectionRoundsEntity selectionRoundsByIdSelectionRound;
+    private SelectionRoundEntity selectionRoundsByIdSelectionRound;
 
 
-    public RateFactorCoefficientsEntity() {
+    public RateFactorCoefficientEntity() {
     }
 
     @JsonCreator
-    public RateFactorCoefficientsEntity(
+    public RateFactorCoefficientEntity(
             @JsonProperty("coefficient") double coefficient,
             @JsonProperty("type") String type
     ) {
@@ -34,11 +34,11 @@ public class RateFactorCoefficientsEntity {
         this.type = type;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -67,7 +67,7 @@ public class RateFactorCoefficientsEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RateFactorCoefficientsEntity that = (RateFactorCoefficientsEntity) o;
+        RateFactorCoefficientEntity that = (RateFactorCoefficientEntity) o;
 
         if (id != that.id) return false;
         if (Double.compare(that.coefficient, coefficient) != 0) return false;
@@ -76,23 +76,12 @@ public class RateFactorCoefficientsEntity {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = id;
-        temp = Double.doubleToLongBits(coefficient);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
-    }
 
-
-    public SelectionRoundsEntity getSelectionRoundsByIdSelectionRound() {
+    public SelectionRoundEntity getSelectionRoundsByIdSelectionRound() {
         return selectionRoundsByIdSelectionRound;
     }
 
-    public void setSelectionRoundsByIdSelectionRound(SelectionRoundsEntity selectionRoundsByIdSelectionRound) {
+    public void setSelectionRoundsByIdSelectionRound(SelectionRoundEntity selectionRoundsByIdSelectionRound) {
         this.selectionRoundsByIdSelectionRound = selectionRoundsByIdSelectionRound;
     }
 }

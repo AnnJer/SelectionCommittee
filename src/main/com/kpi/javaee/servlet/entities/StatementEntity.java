@@ -7,19 +7,19 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "statements", schema = "public", catalog = "selectioncommittee")
-public class StatementsEntity {
+public class StatementEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     private double rating;
     private Timestamp cDate;
 
-    public StatementsEntity() {
+    public StatementEntity() {
     }
 
-    public StatementsEntity(double rating, Timestamp cDate, FacultiesEntity facultiesByIdFaculty, UsersEntity usersByIdEnrollee, SelectionRoundsEntity selectionRoundsByIdSelectionRound) {
+    public StatementEntity(double rating, Timestamp cDate, FacultyEntity facultiesByIdFaculty, UserEntity usersByIdEnrollee, SelectionRoundEntity selectionRoundsByIdSelectionRound) {
         this.rating = rating;
         this.cDate = cDate;
         this.facultiesByIdFaculty = facultiesByIdFaculty;
@@ -29,23 +29,23 @@ public class StatementsEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_faculty", referencedColumnName = "id", nullable = false)
-    private FacultiesEntity facultiesByIdFaculty;
+    private FacultyEntity facultiesByIdFaculty;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_enrollee", referencedColumnName = "id", nullable = false)
-    private UsersEntity usersByIdEnrollee;
+    private UserEntity usersByIdEnrollee;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_selection_round", referencedColumnName = "id", nullable = false)
-    private SelectionRoundsEntity selectionRoundsByIdSelectionRound;
+    private SelectionRoundEntity selectionRoundsByIdSelectionRound;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -74,7 +74,7 @@ public class StatementsEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        StatementsEntity that = (StatementsEntity) o;
+        StatementEntity that = (StatementEntity) o;
 
         if (id != that.id) return false;
         if (Double.compare(that.rating, rating) != 0) return false;
@@ -83,41 +83,30 @@ public class StatementsEntity {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = id;
-        temp = Double.doubleToLongBits(rating);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (cDate != null ? cDate.hashCode() : 0);
-        return result;
-    }
 
-
-    public FacultiesEntity getFacultiesByIdFaculty() {
+    public FacultyEntity getFacultiesByIdFaculty() {
         return facultiesByIdFaculty;
     }
 
-    public void setFacultiesByIdFaculty(FacultiesEntity facultiesByIdFaculty) {
+    public void setFacultiesByIdFaculty(FacultyEntity facultiesByIdFaculty) {
         this.facultiesByIdFaculty = facultiesByIdFaculty;
     }
 
 
-    public UsersEntity getUsersByIdEnrollee() {
+    public UserEntity getUsersByIdEnrollee() {
         return usersByIdEnrollee;
     }
 
-    public void setUsersByIdEnrollee(UsersEntity usersByIdEnrollee) {
+    public void setUsersByIdEnrollee(UserEntity usersByIdEnrollee) {
         this.usersByIdEnrollee = usersByIdEnrollee;
     }
 
 
-    public SelectionRoundsEntity getSelectionRoundsByIdSelectionRound() {
+    public SelectionRoundEntity getSelectionRoundsByIdSelectionRound() {
         return selectionRoundsByIdSelectionRound;
     }
 
-    public void setSelectionRoundsByIdSelectionRound(SelectionRoundsEntity selectionRoundsByIdSelectionRound) {
+    public void setSelectionRoundsByIdSelectionRound(SelectionRoundEntity selectionRoundsByIdSelectionRound) {
         this.selectionRoundsByIdSelectionRound = selectionRoundsByIdSelectionRound;
     }
 }

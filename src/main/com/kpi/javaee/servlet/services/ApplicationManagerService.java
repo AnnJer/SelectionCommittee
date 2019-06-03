@@ -13,7 +13,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -33,49 +32,49 @@ public class ApplicationManagerService {
 
     public void applyToFaculty(Long idFaculty, Long idStudent) {
 
-        FacultiesEntity facultiesEntity = facultiesRepos.findById(idFaculty).orElseThrow(EntityNotFoundException::new);
-        UsersEntity usersEntity = usersRepos.findById(idStudent).orElseThrow(EntityNotFoundException::new);
+        FacultyEntity facultyEntity = facultiesRepos.findById(idFaculty).orElseThrow(EntityNotFoundException::new);
+        UserEntity userEntity = usersRepos.findById(idStudent).orElseThrow(EntityNotFoundException::new);
 
-        checkApplicationInfo(facultiesEntity, usersEntity);
+        checkApplicationInfo(facultyEntity, userEntity);
 
         float rating = calcRating(
-                new ArrayList<>(usersEntity.getRateFactorResultsById()),
-                new ArrayList<>(facultiesEntity.getSelectionRound().getRateFactorCoefficientsById())
+                new ArrayList<>(userEntity.getRateFactorResultsById()),
+                new ArrayList<>(facultyEntity.getSelectionRound().getRateFactorCoefficientsById())
         );
 
-        applicationsRepos.save(new ApplicationsEntity(
-            rating, Timestamp.from(Instant.now()), facultiesEntity, usersEntity
+        applicationsRepos.save(new ApplicationEntity(
+            rating, Timestamp.from(Instant.now()), facultyEntity, userEntity
         ));
     }
 
 
     public void deleteApplication(Long idApplication) {
-        ApplicationsEntity applicationsEntity = applicationsRepos.findById(idApplication).orElseThrow(EntityNotFoundException::new);
+        ApplicationEntity applicationEntity = applicationsRepos.findById(idApplication).orElseThrow(EntityNotFoundException::new);
 
-        if (applicationsEntity.getFacultiesByIdFaculty().getSelectionRound().getEndDate().getTime() < Date.from(Instant.now()).getTime()) {
+        if (applicationEntity.getFacultiesByIdFaculty().getSelectionRound().getEndDate().getTime() < Date.from(Instant.now()).getTime()) {
             throw new IllegalUserInputException("You cant delete application after selection end.");
         }
 
     }
 
 
-    private void checkApplicationInfo(FacultiesEntity facultiesEntity, UsersEntity usersEntity) {
+    private void checkApplicationInfo(FacultyEntity facultyEntity, UserEntity userEntity) {
 
-        if (facultiesEntity.getSelectionRound() != null) {
-            Long count = applicationsRepos.countApplicationsEntitiesByUsersByIdUser(usersEntity);
+        if (facultyEntity.getSelectionRound() != null) {
+            Long count = applicationsRepos.countApplicationsEntitiesByUsersByIdUser(userEntity);
 
             if (count > 0) {
                 throw new IllegalUserInputException("You already have application. Only 1 allowed.");
             }
 
-            if (facultiesEntity.getSelectionRound().getEndDate().getTime() < Date.from(Instant.now()).getTime()) {
+            if (facultyEntity.getSelectionRound().getEndDate().getTime() < Date.from(Instant.now()).getTime()) {
                 throw new IllegalUserInputException("You cant apply after selection end.");
             }
 
-            List<RateFactorResultsEntity> results = new ArrayList<>(usersEntity.getRateFactorResultsById());
+            List<RateFactorResultEntity> results = new ArrayList<>(userEntity.getRateFactorResultsById());
 
-            for (RateFactorCoefficientsEntity coef:
-                    facultiesEntity.getSelectionRound().getRateFactorCoefficientsById()) {
+            for (RateFactorCoefficientEntity coef:
+                    facultyEntity.getSelectionRound().getRateFactorCoefficientsById()) {
                 if (!isHaveSuitable(results, coef)) {
                     throw new IllegalUserInputException("You cant apply this faculty,");
                 }
@@ -89,13 +88,13 @@ public class ApplicationManagerService {
 
 
 
-    private boolean isHaveSuitable(List<RateFactorResultsEntity> results, RateFactorCoefficientsEntity coefficient) {
+    private boolean isHaveSuitable(List<RateFactorResultEntity> results, RateFactorCoefficientEntity coefficient) {
         return findSuitableResult(results, coefficient) != null;
     }
 
 
-    private RateFactorResultsEntity findSuitableResult(List<RateFactorResultsEntity> results, RateFactorCoefficientsEntity coefficient) {
-        for (RateFactorResultsEntity result: results
+    private RateFactorResultEntity findSuitableResult(List<RateFactorResultEntity> results, RateFactorCoefficientEntity coefficient) {
+        for (RateFactorResultEntity result: results
         ) {
 
             if (result.getType().equals(coefficient.getType())) {
@@ -107,15 +106,15 @@ public class ApplicationManagerService {
     }
 
 
-    private float calcRating(List<RateFactorResultsEntity> results, List<RateFactorCoefficientsEntity> coefficients) {
+    private float calcRating(List<RateFactorResultEntity> results, List<RateFactorCoefficientEntity> coefficients) {
 
         float rating = 0;
 
 
-        for (RateFactorCoefficientsEntity coefficient: coefficients
+        for (RateFactorCoefficientEntity coefficient: coefficients
         ) {
 
-            RateFactorResultsEntity result = findSuitableResult(results, coefficient);
+            RateFactorResultEntity result = findSuitableResult(results, coefficient);
             if (result != null) {
                 rating += coefficient.getCoefficient() * result.getResult();
             }

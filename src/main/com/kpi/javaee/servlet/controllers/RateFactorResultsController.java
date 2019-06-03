@@ -2,8 +2,8 @@ package com.kpi.javaee.servlet.controllers;
 
 
 import com.kpi.javaee.servlet.common.RestStatus;
-import com.kpi.javaee.servlet.entities.RateFactorResultsEntity;
-import com.kpi.javaee.servlet.entities.UsersEntity;
+import com.kpi.javaee.servlet.entities.RateFactorResultEntity;
+import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.exceptions.EntityNotFoundException;
 import com.kpi.javaee.servlet.repos.RateFactorResultsRepos;
 import com.kpi.javaee.servlet.services.RateFactorResultsService;
@@ -29,12 +29,12 @@ public class RateFactorResultsController {
     }
 
     @GetMapping("/{id}")
-    public RateFactorResultsEntity get(@PathVariable(name = "id") Long id) {
+    public RateFactorResultEntity get(@PathVariable(name = "id") Long id) {
         return rateFactorResultsRepos.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @GetMapping
-    public Iterable<RateFactorResultsEntity> getAll() {
+    public Iterable<RateFactorResultEntity> getAll() {
         return rateFactorResultsRepos.findAll();
     }
 
@@ -45,20 +45,20 @@ public class RateFactorResultsController {
             @RequestParam(name = "schoolcertificate") Float schoolCertificateResult
     ) {
 
-        UsersEntity usersEntity = (UsersEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserEntity userEntity = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        List<RateFactorResultsEntity> examResults = new ArrayList<>();
+        List<RateFactorResultEntity> examResults = new ArrayList<>();
 
         for (String encodedPair: encodedExams.split(",")) {
 
             Double result = Double.parseDouble(encodedExams.split("-")[0]);
             String examName = encodedExams.split("-")[1];
 
-            examResults.add(rateFactorResultsService.createExam(result, examName, usersEntity));
+            examResults.add(rateFactorResultsService.createExam(result, examName, userEntity));
         }
 
-        RateFactorResultsEntity schoolCertificate = rateFactorResultsService.createSchoolCertificate(
-                schoolCertificateResult, usersEntity
+        RateFactorResultEntity schoolCertificate = rateFactorResultsService.createSchoolCertificate(
+                schoolCertificateResult, userEntity
         );
 
         rateFactorResultsService.insert(examResults, schoolCertificate);

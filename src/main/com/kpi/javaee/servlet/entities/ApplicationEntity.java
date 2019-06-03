@@ -8,11 +8,11 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "applications", schema = "public", catalog = "selectioncommittee")
-public class ApplicationsEntity {
+public class ApplicationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     private double rating;
     private Timestamp cDate;
@@ -20,24 +20,24 @@ public class ApplicationsEntity {
     @JsonProperty("faculty")
     @ManyToOne
     @JoinColumn(name = "id_faculty", referencedColumnName = "id", nullable = false)
-    private FacultiesEntity facultiesByIdFaculty;
+    private FacultyEntity facultiesByIdFaculty;
 
     @JsonProperty("user")
     @ManyToOne
     @JoinColumn(name = "id_user", referencedColumnName = "id", nullable = false)
-    private UsersEntity usersByIdUser;
+    private UserEntity usersByIdUser;
 
 
-    public ApplicationsEntity() {
+    public ApplicationEntity() {
     }
 
     @JsonCreator
-    public ApplicationsEntity(
-            @JsonProperty("id") int id,
+    public ApplicationEntity(
+            @JsonProperty("id") Long id,
             @JsonProperty("rating") double rating,
             @JsonProperty("cDate") Timestamp cDate,
-            @JsonProperty("faculty") FacultiesEntity facultiesByIdFaculty,
-            @JsonProperty("user") UsersEntity usersByIdUser
+            @JsonProperty("faculty") FacultyEntity facultiesByIdFaculty,
+            @JsonProperty("user") UserEntity usersByIdUser
     ) {
         this.id = id;
         this.rating = rating;
@@ -46,18 +46,18 @@ public class ApplicationsEntity {
         this.usersByIdUser = usersByIdUser;
     }
 
-    public ApplicationsEntity(double rating, Timestamp cDate, FacultiesEntity facultiesByIdFaculty, UsersEntity usersByIdUser) {
+    public ApplicationEntity(double rating, Timestamp cDate, FacultyEntity facultiesByIdFaculty, UserEntity usersByIdUser) {
         this.rating = rating;
         this.cDate = cDate;
         this.facultiesByIdFaculty = facultiesByIdFaculty;
         this.usersByIdUser = usersByIdUser;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -86,7 +86,7 @@ public class ApplicationsEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ApplicationsEntity that = (ApplicationsEntity) o;
+        ApplicationEntity that = (ApplicationEntity) o;
 
         if (id != that.id) return false;
         if (Double.compare(that.rating, rating) != 0) return false;
@@ -95,32 +95,21 @@ public class ApplicationsEntity {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = id;
-        temp = Double.doubleToLongBits(rating);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (cDate != null ? cDate.hashCode() : 0);
-        return result;
-    }
 
-
-    public FacultiesEntity getFacultiesByIdFaculty() {
+    public FacultyEntity getFacultiesByIdFaculty() {
         return facultiesByIdFaculty;
     }
 
-    public void setFacultiesByIdFaculty(FacultiesEntity facultiesByIdFaculty) {
+    public void setFacultiesByIdFaculty(FacultyEntity facultiesByIdFaculty) {
         this.facultiesByIdFaculty = facultiesByIdFaculty;
     }
 
 
-    public UsersEntity getUsersByIdUser() {
+    public UserEntity getUsersByIdUser() {
         return usersByIdUser;
     }
 
-    public void setUsersByIdUser(UsersEntity usersByIdUser) {
+    public void setUsersByIdUser(UserEntity usersByIdUser) {
         this.usersByIdUser = usersByIdUser;
     }
 }

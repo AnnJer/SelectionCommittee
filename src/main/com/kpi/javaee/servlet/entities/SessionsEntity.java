@@ -26,13 +26,13 @@ public class SessionsEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_user")
-    private UsersEntity usersByIdUser;
+    private UserEntity usersByIdUser;
 
 
     public SessionsEntity() {
     }
 
-    public SessionsEntity(String token, UsersEntity usersByIdUser) {
+    public SessionsEntity(String token, UserEntity usersByIdUser) {
         this.token = token;
         this.usersByIdUser = usersByIdUser;
         this.type = usersByIdUser.getRole();
@@ -99,11 +99,11 @@ public class SessionsEntity {
     }
 
 
-    public UsersEntity getUsersByIdUser() {
+    public UserEntity getUsersByIdUser() {
         return usersByIdUser;
     }
 
-    public void setUsersByIdUser(UsersEntity usersByIdUser) {
+    public void setUsersByIdUser(UserEntity usersByIdUser) {
         this.usersByIdUser = usersByIdUser;
     }
 
@@ -138,8 +138,8 @@ public class SessionsEntity {
     }
 
 
-    public static SessionsEntity createSession(UsersEntity usersEntity) {
-        return new SessionsEntity(generateToken(16), usersEntity);
+    public static SessionsEntity createSession(UserEntity userEntity) {
+        return new SessionsEntity(generateToken(16), userEntity);
     }
 
 }

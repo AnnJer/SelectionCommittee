@@ -2,10 +2,10 @@ package com.kpi.javaee.servlet.controllers;
 
 
 import com.kpi.javaee.servlet.common.RestStatus;
-import com.kpi.javaee.servlet.entities.ApplicationsEntity;
-import com.kpi.javaee.servlet.entities.FacultiesEntity;
-import com.kpi.javaee.servlet.entities.StatementsEntity;
-import com.kpi.javaee.servlet.entities.UsersEntity;
+import com.kpi.javaee.servlet.entities.ApplicationEntity;
+import com.kpi.javaee.servlet.entities.FacultyEntity;
+import com.kpi.javaee.servlet.entities.StatementEntity;
+import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.exceptions.EntityNotFoundException;
 import com.kpi.javaee.servlet.repos.ApplicationsRepos;
 import com.kpi.javaee.servlet.repos.StatementsRepos;
@@ -35,14 +35,14 @@ public class StatementsController {
 
 
     @GetMapping("/{id}")
-    public StatementsEntity get(@PathVariable(name = "id") Long id) {
+    public StatementEntity get(@PathVariable(name = "id") Long id) {
         return statementsRepos.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @GetMapping
-    public Iterable<StatementsEntity> getAll(
+    public Iterable<StatementEntity> getAll(
             @RequestParam(name = "filterBy", required = false) String filterBy,
-            @RequestParam(name = "filterId", required = false) Integer filterId
+            @RequestParam(name = "filterId", required = false) Long filterId
     ) {
 
         if (filterBy != null) {
@@ -52,13 +52,13 @@ public class StatementsController {
             }
 
             if (filterBy.equals(FILTER_BY_FACULTY)) {
-                FacultiesEntity facultiesEntity = new FacultiesEntity();
-                facultiesEntity.setId(filterId);
-                return statementsRepos.findAllByFacultiesByIdFaculty(facultiesEntity);
+                FacultyEntity facultyEntity = new FacultyEntity();
+                facultyEntity.setId(filterId);
+                return statementsRepos.findAllByFacultiesByIdFaculty(facultyEntity);
             } else {
-                UsersEntity usersEntity = new UsersEntity();
-                usersEntity.setId(filterId);
-                return statementsRepos.findAllByUsersByIdEnrollee(usersEntity);
+                UserEntity userEntity = new UserEntity();
+                userEntity.setId(filterId);
+                return statementsRepos.findAllByUsersByIdEnrollee(userEntity);
             }
 
         }
@@ -72,15 +72,15 @@ public class StatementsController {
             @RequestParam(name = "applicationId") Long applicationId
     ) {
 
-        ApplicationsEntity applicationsEntity = applicationsRepos
+        ApplicationEntity applicationEntity = applicationsRepos
                 .findById(applicationId).orElseThrow(EntityNotFoundException::new);
 
-        statementsRepos.save(new StatementsEntity(
-            applicationsEntity.getRating(),
+        statementsRepos.save(new StatementEntity(
+            applicationEntity.getRating(),
             Timestamp.from(Instant.now()),
-            applicationsEntity.getFacultiesByIdFaculty(),
-            applicationsEntity.getUsersByIdUser(),
-            applicationsEntity.getFacultiesByIdFaculty().getSelectionRound()
+            applicationEntity.getFacultiesByIdFaculty(),
+            applicationEntity.getUsersByIdUser(),
+            applicationEntity.getFacultiesByIdFaculty().getSelectionRound()
         ));
 
         return RestStatus.INSERTED;

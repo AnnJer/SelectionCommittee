@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kpi.javaee.servlet.config.dto.SessionDto;
 import com.kpi.javaee.servlet.config.dto.UserDto;
 import com.kpi.javaee.servlet.entities.SessionsEntity;
-import com.kpi.javaee.servlet.entities.UsersEntity;
+import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.repos.SessionsRepos;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -27,7 +27,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
-        UsersEntity securityUser = (UsersEntity) authentication.getPrincipal();
+        UserEntity securityUser = (UserEntity) authentication.getPrincipal();
         SessionsEntity sessionsEntity = SessionsEntity.createSession(securityUser);
 
         sessionsRepos.save(sessionsEntity);
@@ -36,10 +36,12 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         PrintWriter writer = response.getWriter();
 
         UserDto userDto = new UserDto(
+                securityUser.getId(),
                 securityUser.getName(),
                 securityUser.getSurname(),
                 securityUser.getLastname(),
                 securityUser.getLogin(),
+                new ArrayList<>(securityUser.getRateFactorResultsById()),
                 List.of(securityUser.getRole())
         );
 

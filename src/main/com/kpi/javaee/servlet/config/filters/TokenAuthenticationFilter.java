@@ -1,7 +1,7 @@
 package com.kpi.javaee.servlet.config.filters;
 
 import com.kpi.javaee.servlet.entities.SessionsEntity;
-import com.kpi.javaee.servlet.entities.UsersEntity;
+import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.repos.SessionsRepos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
             SessionsEntity sessionsEntity = sessionsRepos.findByToken(accessToken).orElseThrow(IOException::new);
 
             //Populate SecurityContextHolder by fetching relevant information using token
-            final UsersEntity user = sessionsEntity.getUsersByIdUser();
+            final UserEntity user = sessionsEntity.getUsersByIdUser();
 
             final UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

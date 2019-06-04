@@ -4,7 +4,6 @@ package com.kpi.javaee.servlet.config.handlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kpi.javaee.servlet.config.dto.SessionDto;
 import com.kpi.javaee.servlet.config.dto.UserDto;
-import com.kpi.javaee.servlet.entities.SessionsEntity;
 import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.repos.SessionsRepos;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,14 @@
 package com.kpi.javaee.servlet.config.filters;
 
-import com.kpi.javaee.servlet.entities.SessionsEntity;
+import com.kpi.javaee.servlet.config.dto.SessionDto;
+import com.kpi.javaee.servlet.entities.Role;
 import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.repos.SessionsRepos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -15,11 +17,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.List;
 
 public class TokenAuthenticationFilter extends GenericFilterBean {
 
     @Autowired
     private SessionsRepos sessionsRepos;
+
+    @Value("{endpoints.auth.sessions}")
+    private String GET_SESSION_ENDPOINT;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${spring.security.token-header}")
     private String TOKEN_HEADER_NAME;
@@ -33,15 +42,13 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
         //extract token from header
         final String accessToken = httpRequest.getHeader(TOKEN_HEADER_NAME);
         if (null != accessToken) {
-            //get and check whether token is valid ( from DB or file wherever you are storing the token)
 
-            SessionsEntity sessionsEntity = sessionsRepos.findByToken(accessToken).orElseThrow(IOException::new);
+            SessionDto sessionDto = restTemplate.getForObject(GET_SESSION_ENDPOINT, SessionDto.class);
 
-            //Populate SecurityContextHolder by fetching relevant information using token
-            final UserEntity user = sessionsEntity.getUsersByIdUser();
+            Role userRole = Role.parseFromString(sessionDto.getUser().getRoles().get(0));
 
             final UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(sessionDto.getUser(), null, List.of(userRole));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 

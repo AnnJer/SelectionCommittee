@@ -5,7 +5,6 @@ import com.kpi.javaee.servlet.config.filters.TokenAuthenticationFilter;
 import com.kpi.javaee.servlet.config.handlers.AuthenticationFailureHandler;
 import com.kpi.javaee.servlet.config.handlers.AuthenticationSuccessHandler;
 import com.kpi.javaee.servlet.config.handlers.RestAuthenticationEntryPoint;
-import com.kpi.javaee.servlet.config.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +21,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-
-    private static final String AUTHENTICATE_ENDPOINT = "/sign_in";
 
     // Beans connected with translating input and output to JSON
     @Bean
@@ -46,8 +43,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new TokenAuthenticationFilter();
     }
 
-    @Autowired
-    AuthService authService;
 
 
 
@@ -58,21 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 exceptionHandling()
                     .authenticationEntryPoint(restAuthenticationEntryPoint())
                 .and()
-
                     .csrf().disable()
-
-
-                    .authorizeRequests()
-                    .antMatchers("/user", AUTHENTICATE_ENDPOINT).permitAll()
-//                    .anyRequest().authenticated()
-                .and()
-                    .formLogin()
-                    .loginPage(AUTHENTICATE_ENDPOINT)
-                    .loginProcessingUrl(AUTHENTICATE_ENDPOINT)
-                    .failureHandler(authenticationFailureHandler())
-                    .successHandler(authenticationSuccessHandler())
-                .and()
-                    .logout().permitAll()
+                    .authorizeRequests().anyRequest().permitAll()
                 .and()
                     .cors()
                 .and()
@@ -81,9 +63,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().anyRequest().permitAll();
     }
 
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(authService).passwordEncoder(NoOpPasswordEncoder.getInstance());
-    }
 }

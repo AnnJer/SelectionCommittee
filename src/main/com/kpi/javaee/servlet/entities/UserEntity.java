@@ -3,9 +3,6 @@ package com.kpi.javaee.servlet.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.repository.cdi.Eager;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -13,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users", schema = "public", catalog = "selectioncommittee")
-public class UserEntity implements UserDetails {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -110,8 +107,7 @@ public class UserEntity implements UserDetails {
         this.login = login;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<Role> getAuthorities() {
         return List.of(Role.parseFromString(role));
     }
 
@@ -121,27 +117,22 @@ public class UserEntity implements UserDetails {
         return password;
     }
 
-    @Override
     public String getUsername() {
         return login;
     }
 
-    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
     public boolean isEnabled() {
         return true;
     }

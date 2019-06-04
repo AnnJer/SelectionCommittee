@@ -2,6 +2,7 @@ package com.kpi.javaee.servlet.controllers;
 
 
 import com.kpi.javaee.servlet.common.RestStatus;
+import com.kpi.javaee.servlet.config.dto.UserDto;
 import com.kpi.javaee.servlet.entities.RateFactorResultEntity;
 import com.kpi.javaee.servlet.entities.UserEntity;
 import com.kpi.javaee.servlet.exceptions.EntityNotFoundException;
@@ -45,7 +46,11 @@ public class RateFactorResultsController {
             @RequestParam(name = "schoolcertificate") Float schoolCertificateResult
     ) {
 
-        UserEntity userEntity = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDto user = (UserDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UserEntity userEntity = new UserEntity(
+                user.getName(), user.getSurname(), user.getLastname(), user.getLogin(), user.getRoles().get(0)
+        );
 
         List<RateFactorResultEntity> examResults = new ArrayList<>();
 

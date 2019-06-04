@@ -2,8 +2,6 @@ package com.kpi.javaee.servlet.config.filters;
 
 import com.kpi.javaee.servlet.config.dto.SessionDto;
 import com.kpi.javaee.servlet.entities.Role;
-import com.kpi.javaee.servlet.entities.UserEntity;
-import com.kpi.javaee.servlet.repos.SessionsRepos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +19,7 @@ import java.util.List;
 
 public class TokenAuthenticationFilter extends GenericFilterBean {
 
-    @Autowired
-    private SessionsRepos sessionsRepos;
-
-    @Value("{endpoints.auth.sessions}")
+    @Value("${endpoints.auth.sessions}")
     private String GET_SESSION_ENDPOINT;
 
     @Autowired
@@ -41,9 +36,13 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
 
         //extract token from header
         final String accessToken = httpRequest.getHeader(TOKEN_HEADER_NAME);
+
+
         if (null != accessToken) {
 
-            SessionDto sessionDto = restTemplate.getForObject(GET_SESSION_ENDPOINT, SessionDto.class);
+            SessionDto sessionDto = restTemplate.getForObject(GET_SESSION_ENDPOINT + "/" + accessToken, SessionDto.class);
+
+            System.out.println(sessionDto.getUser().getName());
 
             Role userRole = Role.parseFromString(sessionDto.getUser().getRoles().get(0));
 
